@@ -8,7 +8,7 @@ const reimbursementSchema =new mongoose.Schema({
         required,
     },
     amount: {
-        types: Number,
+        type: Number,
         required: true,
         min:0
     },
@@ -22,7 +22,7 @@ const reimbursementSchema =new mongoose.Schema({
         required:true,
     },
     status: {
-        types: String,
+        type: String,
         enum: ["pending", "approved", "rejected"],
         default:"pending"
     }
