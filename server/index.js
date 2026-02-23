@@ -13,7 +13,13 @@ app.use(express.json());
 const port = 3000
 
 //  auth route
-app.use("/api/auth",authRoutes)
+app.use("/api/auth", authRoutes)
+
+
+
+const authMiddleware = require("./middleware/authMiddleware");
+
+
 
 
 app.get("/", (req,res) => {

@@ -71,7 +71,7 @@ const loginUser = async (req, res) => {
            return res.status(400).json({ message: "Invalid email or password" })
         }
 
-        //  gen jwt 
+        //  generate jwt 
         const token = await jwt.sign(
             {
                 id: user._id,
@@ -94,7 +94,7 @@ const loginUser = async (req, res) => {
             }
         })
     } catch (err) {
-       return res.status(500).json({message:err.message})
+        res.status(500).json({message:err.message})
     }
 }
 
