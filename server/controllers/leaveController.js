@@ -25,6 +25,16 @@ const applyLeave = async (req, res)=> {
     }
 }
 
+//  getting all leaves from db 
 
+const getLeaves = async (req, res) => {
+    try {
+        const leaves =await Leave.findOne({ user: req.user.id }).sort({ createdAt: -1 })
+      return  res.status(200).json(leaves)
 
-module.exports={applyLeave}
+    } catch (err) {
+        res.status(404).json({ message: err.message })
+    }
+}
+
+module.exports={applyLeave,getLeaves}
