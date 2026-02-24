@@ -29,11 +29,11 @@ const applyLeave = async (req, res)=> {
 
 const getLeaves = async (req, res) => {
     try {
-        const leaves =await Leave.findOne({ user: req.user.id }).sort({ createdAt: -1 })
+        const leaves =await Leave.find({ user: req.user.id }).sort({ createdAt: -1 })
       return  res.status(200).json(leaves)
 
     } catch (err) {
-        res.status(404).json({ message: err.message })
+      return  res.status(404).json({ message: err.message })
     }
 }
 
