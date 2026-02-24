@@ -2,7 +2,7 @@ const express = require("express")
 const connectDb = require("./config/db");
 const dotenv=require("dotenv")
 const authRoutes = require("./routes/authRoutes")
-const { authMiddleware, checkRole } = require("./middleware/authMiddleware")
+const reimbursementRoute=require("./routes/reimbursemnetRoute")
 
 const leaveRoute=require("./routes/leaveRoute")
 
@@ -21,6 +21,8 @@ app.use("/api/auth", authRoutes)
 //  apply leave
 app.use("/api/leave", leaveRoute);
 
+// apply reimbursement
+app.use("/api/reimbursement",reimbursementRoute)
 
 app.get("/", (req,res) => {
     res.send("Hola")
