@@ -25,7 +25,7 @@ const applyLeave = async (req, res)=> {
     }
 }
 
-//  getting all leaves from db 
+//  getting all leaves from db  for  the particular user
 
 const getLeaves = async (req, res) => {
     try {
@@ -37,4 +37,15 @@ const getLeaves = async (req, res) => {
     }
 }
 
-module.exports={applyLeave,getLeaves}
+//  getting all user leave for manger role or admin
+
+const getAllLeaves = async (req, res) => {
+    try {
+        const leaves = await Leave.find().populate("user", "email").sort({ createdAt: -1 })
+        return res.status(200).json(leaves);
+    } catch (err) {
+        return res.status(500).json({message:err.message})
+    }
+}
+
+module.exports={applyLeave,getLeaves,getAllLeaves}
