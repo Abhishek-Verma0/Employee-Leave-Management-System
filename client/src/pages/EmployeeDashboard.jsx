@@ -53,12 +53,34 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const handleApplyReimb = async (data) => {
+  const handleApplyReimb = async (formData) => {
     try {
-      await api.post("/api/reimbursement/applyReimbursement", data);
+      await api.post("/api/reimbursement/applyReimbursement", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       fetchData();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to apply reimbursement");
+    }
+  };
+
+  const handleUpdateBill = async (id, formData) => {
+    try {
+      await api.put(`/api/reimbursement/updateBill/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update bill");
+    }
+  };
+
+  const handleDeleteBill = async (id) => {
+    try {
+      await api.delete(`/api/reimbursement/deleteBill/${id}`);
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete bill");
     }
   };
 
@@ -89,7 +111,7 @@ const EmployeeDashboard = () => {
       ) : activeTab === "leaves" ? (
         <LeaveTable leaves={leaves} />
       ) : (
-        <ReimbursementTable reimbursements={reimbursements} />
+        <ReimbursementTable reimbursements={reimbursements} onUpdateBill={handleUpdateBill} onDeleteBill={handleDeleteBill} />
       )}
     </div>
   );

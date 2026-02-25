@@ -62,12 +62,34 @@ const ManagerDashboard = () => {
     }
   };
 
-  const handleApplyReimb = async (data) => {
+  const handleApplyReimb = async (formData) => {
     try {
-      await api.post("/api/reimbursement/applyReimbursement", data);
+      await api.post("/api/reimbursement/applyReimbursement", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       fetchData();
     } catch (err) {
       setError(err.response?.data?.message || "Failed");
+    }
+  };
+
+  const handleUpdateBill = async (id, formData) => {
+    try {
+      await api.put(`/api/reimbursement/updateBill/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update bill");
+    }
+  };
+
+  const handleDeleteBill = async (id) => {
+    try {
+      await api.delete(`/api/reimbursement/deleteBill/${id}`);
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete bill");
     }
   };
 
@@ -101,7 +123,7 @@ const ManagerDashboard = () => {
       case "my-leaves":
         return <LeaveTable leaves={myLeaves} />;
       case "my-reimbursements":
-        return <ReimbursementTable reimbursements={myReimbursements} />;
+        return <ReimbursementTable reimbursements={myReimbursements} onUpdateBill={handleUpdateBill} onDeleteBill={handleDeleteBill} />;
       case "team-leaves":
         return <TeamLeaveTable leaves={teamLeaves} onUpdate={handleUpdateLeave} />;
       case "team-reimbursements":
