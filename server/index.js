@@ -9,6 +9,7 @@ const reimbursementRoute=require("./routes/reimbursemnetRoute")
 
 const leaveRoute = require("./routes/leaveRoute")
 const userRoleRoute=require("./routes/userRoutes")
+const path = require("path");
 
 //  connecting db
 
@@ -17,7 +18,7 @@ connectDb()
 const app = express()
 app.use(cors())
 app.use(express.json());
-const port = 3000
+const PORT = process.env.PORT || 3000
 
 //  auth route
 app.use("/api/auth", authRoutes)
@@ -31,12 +32,14 @@ app.use("/api/reimbursement", reimbursementRoute)
 // update User Role
 app.use("/api/user",userRoleRoute)
 
-app.get("/", (req,res) => {
-    res.send("Hola")
-})
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, "../client/dist")));
 
+// Catch-all route to serve the React index.html for any non-API routes
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
+});
 
-
-app.listen(port, () => {
-    console.log("server running on " + port);
+app.listen(PORT, () => {
+    console.log(`server running on ${PORT}`);
 })

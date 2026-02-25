@@ -1,0 +1,16 @@
+{
+  "name": "swiftly-unified",
+  "version": "1.0.0",
+  "description": "Unified deployment for Swiftly",
+  "main": "server/index.js",
+  "scripts": {
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install",
+    "build-client": "cd client && npm run build",
+    "build": "npm run install-server && npm run install-client && npm run build-client",
+    "start": "cd server && node index.js"
+  },
+  "keywords": [],
+  "author": "Abhishek Verma",
+  "license": "ISC"
+}
