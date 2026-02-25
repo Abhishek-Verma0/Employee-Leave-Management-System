@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import { FiUser, FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 
 const RegisterPage = () => {
@@ -18,9 +19,12 @@ const RegisterPage = () => {
     setLoading(true);
     try {
       const user = await register(name, email, password);
+      toast.success("Account created successfully");
       navigate(`/${user.role}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      const msg = err.response?.data?.message || "Registration failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 
 const LoginPage = () => {
@@ -17,9 +18,12 @@ const LoginPage = () => {
     setLoading(true);
     try {
       const user = await login(email, password);
+      toast.success("Logged in successfully");
       navigate(`/${user.role}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      const msg = err.response?.data?.message || "Login failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

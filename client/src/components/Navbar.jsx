@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import toast from "react-hot-toast";
 import { FiSun, FiMoon, FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import { useState } from "react";
 
@@ -12,6 +13,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    toast.success("Logged out successfully");
     navigate("/");
   };
 

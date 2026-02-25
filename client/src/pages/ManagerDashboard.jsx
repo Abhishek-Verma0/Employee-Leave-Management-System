@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import PageHeader from "../components/PageHeader";
-import ErrorAlert from "../components/ErrorAlert";
 import TabBar from "../components/TabBar";
 import LeaveForm from "../components/LeaveForm";
 import ReimbursementForm from "../components/ReimbursementForm";
@@ -22,7 +22,6 @@ const ManagerDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("my-leaves");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const [myLeaves, setMyLeaves] = useState([]);
   const [myReimbursements, setMyReimbursements] = useState([]);
@@ -43,7 +42,7 @@ const ManagerDashboard = () => {
       setTeamLeaves(tl.data);
       setTeamReimb(tr.data.reimbursements || []);
     } catch {
-      setError("Failed to load data");
+      toast.error("Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -56,9 +55,10 @@ const ManagerDashboard = () => {
   const handleApplyLeave = async (data) => {
     try {
       await api.post("/api/leave/applyLeave", data);
+      toast.success("Leave applied successfully");
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed");
+      toast.error(err.response?.data?.message || "Failed to apply leave");
     }
   };
 
@@ -67,9 +67,10 @@ const ManagerDashboard = () => {
       await api.post("/api/reimbursement/applyReimbursement", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      toast.success("Reimbursement applied successfully");
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed");
+      toast.error(err.response?.data?.message || "Failed to apply reimbursement");
     }
   };
 
@@ -78,36 +79,40 @@ const ManagerDashboard = () => {
       await api.put(`/api/reimbursement/updateBill/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      toast.success("Bill updated successfully");
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update bill");
+      toast.error(err.response?.data?.message || "Failed to update bill");
     }
   };
 
   const handleDeleteBill = async (id) => {
     try {
       await api.delete(`/api/reimbursement/deleteBill/${id}`);
+      toast.success("Bill deleted successfully");
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete bill");
+      toast.error(err.response?.data?.message || "Failed to delete bill");
     }
   };
 
   const handleUpdateLeave = async (id, status) => {
     try {
       await api.put(`/api/leave/updateLeave/${id}`, { status });
+      toast.success(`Leave ${status} successfully`);
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update");
+      toast.error(err.response?.data?.message || "Failed to update");
     }
   };
 
   const handleUpdateReimb = async (id, status) => {
     try {
       await api.put(`/api/reimbursement/update/${id}`, { status });
+      toast.success(`Reimbursement ${status} successfully`);
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update");
+      toast.error(err.response?.data?.message || "Failed to update");
     }
   };
 
@@ -136,7 +141,6 @@ const ManagerDashboard = () => {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Manager Dashboard" />
-      <ErrorAlert message={error} />
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === "my-leaves" && <LeaveForm onSubmit={handleApplyLeave} />}

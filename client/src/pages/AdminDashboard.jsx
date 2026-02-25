@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { FiUsers, FiCalendar, FiDollarSign } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
-import ErrorAlert from "../components/ErrorAlert";
 import SummaryCard from "../components/SummaryCard";
 import TabBar from "../components/TabBar";
 import UserTable from "../components/UserTable";
@@ -20,7 +20,6 @@ const AdminDashboard = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("users");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const [users, setUsers] = useState([]);
   const [allLeaves, setAllLeaves] = useState([]);
@@ -38,7 +37,7 @@ const AdminDashboard = () => {
       setAllLeaves(lRes.data);
       setAllReimb(rRes.data.reimbursements || []);
     } catch {
-      setError("Failed to load data");
+      toast.error("Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -51,27 +50,30 @@ const AdminDashboard = () => {
   const handleUpdateRole = async (id, role) => {
     try {
       await api.put(`/api/user/updateRole/${id}`, { role });
+      toast.success(`User role updated to ${role}`);
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update role");
+      toast.error(err.response?.data?.message || "Failed to update role");
     }
   };
 
   const handleUpdateLeave = async (id, status) => {
     try {
       await api.put(`/api/leave/updateLeave/${id}`, { status });
+      toast.success(`Leave ${status} successfully`);
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update");
+      toast.error(err.response?.data?.message || "Failed to update");
     }
   };
 
   const handleUpdateReimb = async (id, status) => {
     try {
       await api.put(`/api/reimbursement/update/${id}`, { status });
+      toast.success(`Reimbursement ${status} successfully`);
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update");
+      toast.error(err.response?.data?.message || "Failed to update");
     }
   };
 
@@ -98,7 +100,6 @@ const AdminDashboard = () => {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Admin Panel" />
-      <ErrorAlert message={error} />
 
       {/* Summary Cards */}
       <div className="mb-6 grid grid-cols-3 gap-3">
