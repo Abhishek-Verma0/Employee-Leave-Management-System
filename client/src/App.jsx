@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -21,8 +22,9 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-primary)" }}>
+    <div className="flex min-h-screen flex-col" style={{ backgroundColor: "var(--bg-primary)" }}>
       <Navbar />
+      <main className="flex-1">
       <Routes>
         <Route path="/" element={user ? <Navigate to={`/${user.role}`} replace /> : <LandingPage />} />
         <Route path="/login" element={user ? <Navigate to={`/${user.role}`} replace /> : <LoginPage />} />
@@ -53,6 +55,8 @@ const App = () => {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </main>
+      <Footer />
     </div>
   );
 };

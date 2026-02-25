@@ -38,7 +38,7 @@ const Navbar = () => {
           className="text-lg font-bold tracking-tight sm:text-xl"
           style={{ color: "var(--text-primary)" }}
         >
-          <span style={{ color: "#6366f1" }}>Leave</span>Manager
+          <span style={{ color: "#6366f1" }}>Swiftly</span>
         </Link>
 
         {/* Mobile menu toggle */}

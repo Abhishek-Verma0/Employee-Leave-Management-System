@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiUsers, FiCalendar, FiDollarSign } from "react-icons/fi";
+import { FiUsers, FiCalendar, FiDollarSign, FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
+import StatusChart from "../components/StatusChart";
 import TabBar from "../components/TabBar";
 import UserTable from "../components/UserTable";
 import TeamLeaveTable from "../components/TeamLeaveTable";
@@ -77,6 +78,20 @@ const AdminDashboard = () => {
     }
   };
 
+  const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
+
+  const leaveStats = {
+    pending: countByStatus(allLeaves, "pending"),
+    approved: countByStatus(allLeaves, "approved"),
+    rejected: countByStatus(allLeaves, "rejected"),
+  };
+
+  const reimbStats = {
+    pending: countByStatus(allReimb, "pending"),
+    approved: countByStatus(allReimb, "approved"),
+    rejected: countByStatus(allReimb, "rejected"),
+  };
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -101,11 +116,17 @@ const AdminDashboard = () => {
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Admin Panel" />
 
-      {/* Summary Cards */}
+      {/* Overview Summary */}
       <div className="mb-6 grid grid-cols-3 gap-3">
         <SummaryCard icon={<FiUsers size={18} />} count={users.length} label="Total Users" />
         <SummaryCard icon={<FiCalendar size={18} />} count={allLeaves.length} label="Leave Requests" />
         <SummaryCard icon={<FiDollarSign size={18} />} count={allReimb.length} label="Reimbursements" />
+      </div>
+
+      {/* Charts side-by-side */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <StatusChart title="Leave Requests" data={leaveStats} />
+        <StatusChart title="Reimbursement Claims" data={reimbStats} />
       </div>
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />

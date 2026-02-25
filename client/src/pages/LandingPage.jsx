@@ -49,8 +49,8 @@ const LandingPage = () => {
             className="mb-4 text-3xl font-bold tracking-tight sm:text-5xl"
             style={{ color: "var(--text-primary)" }}
           >
-            Employee Leave &{" "}
-            <span style={{ color: "#6366f1" }}>Reimbursement</span> Portal
+            <span style={{ color: "#6366f1" }}>Swiftly</span> — Leave &{" "}
+            Reimbursement Portal
           </h1>
           <p
             className="mx-auto mb-8 max-w-xl text-base sm:text-lg"

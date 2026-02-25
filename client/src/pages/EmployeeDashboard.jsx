@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiClock, FiCheckCircle, FiXCircle, FiCalendar } from "react-icons/fi";
+import { FiClock, FiCheckCircle, FiXCircle, FiCalendar, FiDollarSign } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
+import StatusChart from "../components/StatusChart";
 import TabBar from "../components/TabBar";
 import LeaveForm from "../components/LeaveForm";
 import ReimbursementForm from "../components/ReimbursementForm";
@@ -89,19 +90,44 @@ const EmployeeDashboard = () => {
 
   const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
 
+  const leaveStats = {
+    pending: countByStatus(leaves, "pending"),
+    approved: countByStatus(leaves, "approved"),
+    rejected: countByStatus(leaves, "rejected"),
+  };
+
+  const reimbStats = {
+    pending: countByStatus(reimbursements, "pending"),
+    approved: countByStatus(reimbursements, "approved"),
+    rejected: countByStatus(reimbursements, "rejected"),
+  };
+
+  const currentData = activeTab === "leaves" ? leaves : reimbursements;
+  const currentStats = activeTab === "leaves" ? leaveStats : reimbStats;
+  const totalIcon = activeTab === "leaves" ? <FiCalendar size={18} /> : <FiDollarSign size={18} />;
+  const totalLabel = activeTab === "leaves" ? "Total Leaves" : "Total Claims";
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Employee Dashboard" />
 
-      {/* Summary Cards */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <SummaryCard icon={<FiCalendar size={18} />} count={leaves.length} label="Total Leaves" />
-        <SummaryCard icon={<FiClock size={18} />} count={countByStatus(leaves, "pending")} label="Pending" />
-        <SummaryCard icon={<FiCheckCircle size={18} />} count={countByStatus(leaves, "approved")} label="Approved" />
-        <SummaryCard icon={<FiXCircle size={18} />} count={countByStatus(leaves, "rejected")} label="Rejected" />
-      </div>
-
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Summary Cards + Chart */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-5">
+        <div className="col-span-1 grid grid-cols-2 gap-3 sm:col-span-3 sm:grid-cols-2">
+          <SummaryCard icon={totalIcon} count={currentData.length} label={totalLabel} />
+          <SummaryCard icon={<FiClock size={18} />} count={currentStats.pending} label="Pending" />
+          <SummaryCard icon={<FiCheckCircle size={18} />} count={currentStats.approved} label="Approved" />
+          <SummaryCard icon={<FiXCircle size={18} />} count={currentStats.rejected} label="Rejected" />
+        </div>
+        <div className="col-span-1 sm:col-span-2">
+          <StatusChart
+            title={activeTab === "leaves" ? "Leave Status" : "Reimbursement Status"}
+            data={currentStats}
+          />
+        </div>
+      </div>
 
       {activeTab === "leaves" && <LeaveForm onSubmit={handleApplyLeave} />}
       {activeTab === "reimbursements" && <ReimbursementForm onSubmit={handleApplyReimb} />}

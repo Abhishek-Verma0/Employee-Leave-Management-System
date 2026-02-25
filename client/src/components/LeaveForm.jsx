@@ -7,6 +7,8 @@ const LeaveForm = ({ onSubmit }) => {
   const [toDate, setToDate] = useState("");
   const [reason, setReason] = useState("");
 
+  const today = new Date().toISOString().split("T")[0];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     await onSubmit({ fromDate, toDate, reason });
@@ -55,8 +57,12 @@ const LeaveForm = ({ onSubmit }) => {
               <input
                 type="date"
                 value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
+                onChange={(e) => {
+                  setFromDate(e.target.value);
+                  if (toDate && e.target.value > toDate) setToDate("");
+                }}
                 required
+                min={today}
                 className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
                 style={{
                   borderColor: "var(--border-color)",
@@ -77,6 +83,7 @@ const LeaveForm = ({ onSubmit }) => {
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
                 required
+                min={fromDate || today}
                 className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
                 style={{
                   borderColor: "var(--border-color)",

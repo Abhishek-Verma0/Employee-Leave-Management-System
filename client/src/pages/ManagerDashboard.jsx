@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { FiClock, FiCheckCircle, FiXCircle, FiCalendar, FiDollarSign } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
+import SummaryCard from "../components/SummaryCard";
+import StatusChart from "../components/StatusChart";
 import TabBar from "../components/TabBar";
 import LeaveForm from "../components/LeaveForm";
 import ReimbursementForm from "../components/ReimbursementForm";
@@ -116,6 +119,31 @@ const ManagerDashboard = () => {
     }
   };
 
+  const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
+
+  // Pick the right data set based on active tab
+  const getActiveData = () => {
+    switch (activeTab) {
+      case "my-leaves": return myLeaves;
+      case "my-reimbursements": return myReimbursements;
+      case "team-leaves": return teamLeaves;
+      case "team-reimbursements": return teamReimb;
+      default: return [];
+    }
+  };
+
+  const activeData = getActiveData();
+  const activeStats = {
+    pending: countByStatus(activeData, "pending"),
+    approved: countByStatus(activeData, "approved"),
+    rejected: countByStatus(activeData, "rejected"),
+  };
+
+  const isLeaveTab = activeTab === "my-leaves" || activeTab === "team-leaves";
+  const totalIcon = isLeaveTab ? <FiCalendar size={18} /> : <FiDollarSign size={18} />;
+  const chartTitle = isLeaveTab ? "Leave Status" : "Reimbursement Status";
+  const totalLabel = isLeaveTab ? "Total Leaves" : "Total Claims";
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -142,6 +170,19 @@ const ManagerDashboard = () => {
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Manager Dashboard" />
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Summary Cards + Chart */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-5">
+        <div className="col-span-1 grid grid-cols-2 gap-3 sm:col-span-3 sm:grid-cols-2">
+          <SummaryCard icon={totalIcon} count={activeData.length} label={totalLabel} />
+          <SummaryCard icon={<FiClock size={18} />} count={activeStats.pending} label="Pending" />
+          <SummaryCard icon={<FiCheckCircle size={18} />} count={activeStats.approved} label="Approved" />
+          <SummaryCard icon={<FiXCircle size={18} />} count={activeStats.rejected} label="Rejected" />
+        </div>
+        <div className="col-span-1 sm:col-span-2">
+          <StatusChart title={chartTitle} data={activeStats} />
+        </div>
+      </div>
 
       {activeTab === "my-leaves" && <LeaveForm onSubmit={handleApplyLeave} />}
       {activeTab === "my-reimbursements" && <ReimbursementForm onSubmit={handleApplyReimb} />}
