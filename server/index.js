@@ -1,15 +1,16 @@
+const dotenv=require("dotenv")
+dotenv.config() // loading env — must be before other requires that use process.env
+
 const express = require("express")
 const cors = require("cors")
 const connectDb = require("./config/db");
-const dotenv=require("dotenv")
 const authRoutes = require("./routes/authRoutes")
 const reimbursementRoute=require("./routes/reimbursemnetRoute")
 
 const leaveRoute = require("./routes/leaveRoute")
 const userRoleRoute=require("./routes/userRoutes")
 
-dotenv.config() // laoding env
-//  conncecting db
+//  connecting db
 
 connectDb()
 

@@ -21,6 +21,14 @@ const reimbursementSchema =new mongoose.Schema({
         trim: true,
         required:true,
     },
+    billUrl: {
+        type: String,
+        default: null,
+    },
+    billFileId: {
+        type: String,
+        default: null,
+    },
     status: {
         type: String,
         enum: ["pending", "approved", "rejected"],
