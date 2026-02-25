@@ -48,4 +48,36 @@ const getAllLeaves = async (req, res) => {
     }
 }
 
-module.exports={applyLeave,getLeaves,getAllLeaves}
+
+//  updaating leave status
+
+const updateLeave = async(req, res) => {
+    try {
+        const leaveId = req.params.id
+        const { status } = req.body
+        
+        const leave =await Leave.findById(leaveId).populate("user")
+        if (!leave) {
+            return res.status(404).json({message:"Leave not found "})
+        }
+
+        const applicantRole = leave.user.role
+        const approverRole = req.user.role
+        if (approverRole === "manager" && applicantRole !== "employee")
+        {
+            return res.status(403).json({ message: "Managers can only approve employee leaves" });
+        }
+        if (approverRole === "admin" && applicantRole !== "manager")
+        {
+            return res.status(403).json({ message: "Admin can only approve manager leaves" });
+        }
+        leave.status = status
+        await leave.save();
+        res.status(200).json({message:`Leave ${status} successfully`,leave})
+        
+    } catch (err) {
+        res.status(500).json({message:err.message})
+    }
+}
+
+module.exports={applyLeave,getLeaves,getAllLeaves,updateLeave}
