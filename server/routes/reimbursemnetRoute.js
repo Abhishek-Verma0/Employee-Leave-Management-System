@@ -5,9 +5,9 @@ const { applyReimbursement,getReimbursement ,getAllReimbursement,updateReimburse
 const { authMiddleware, checkRole } = require("../middleware/authMiddleware")
 
 
-router.post("/applyReimbursement", authMiddleware, checkRole(["employee","managerin"]), applyReimbursement)
+router.post("/applyReimbursement", authMiddleware, checkRole(["employee","manager"]), applyReimbursement)
 
-router.get("/getReimbursement",authMiddleware,checkRole(['employee']),getReimbursement)
+router.get("/getReimbursement",authMiddleware,checkRole(['employee','manager']),getReimbursement)
 
 router.get("/getAll", authMiddleware, checkRole(["admin", "manager"]), getAllReimbursement)
 

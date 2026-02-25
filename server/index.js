@@ -1,4 +1,5 @@
 const express = require("express")
+const cors = require("cors")
 const connectDb = require("./config/db");
 const dotenv=require("dotenv")
 const authRoutes = require("./routes/authRoutes")
@@ -13,6 +14,7 @@ dotenv.config() // laoding env
 connectDb()
 
 const app = express()
+app.use(cors())
 app.use(express.json());
 const port = 3000
 

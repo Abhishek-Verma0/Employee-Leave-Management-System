@@ -6,7 +6,7 @@ const { applyLeave ,getLeaves,getAllLeaves,updateLeave} = require("../controller
 const {authMiddleware,checkRole} =require("../middleware/authMiddleware")
 
 router.post("/applyLeave", authMiddleware, checkRole(["employee","manager"]), applyLeave)
-router.get("/getLeaves",authMiddleware,checkRole(['employee']),getLeaves)
+router.get("/getLeaves",authMiddleware,checkRole(['employee','manager']),getLeaves)
 router.get("/allLeaves", authMiddleware, checkRole(["manager", "admin"]), getAllLeaves)
 
 router.put("/updateLeave/:id",authMiddleware,checkRole(["admin","manager"]),updateLeave)
