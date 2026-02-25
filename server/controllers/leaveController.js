@@ -19,7 +19,7 @@ const applyLeave = async (req, res)=> {
         })
     }
     catch (err) {
-        res.status(500).json({
+      return  res.status(500).json({
             message:err.message
         })
     }
@@ -41,7 +41,7 @@ const getLeaves = async (req, res) => {
 
 const getAllLeaves = async (req, res) => {
     try {
-        const leaves = await Leave.find().populate("user", "email").sort({ createdAt: -1 })
+        const leaves = await Leave.find({user:{$ne:req.user.id}}).populate("user", "email").sort({ createdAt: -1 })
         return res.status(200).json(leaves);
     } catch (err) {
         return res.status(500).json({message:err.message})
@@ -73,11 +73,14 @@ const updateLeave = async(req, res) => {
         }
         leave.status = status
         await leave.save();
-        res.status(200).json({message:`Leave ${status} successfully`,leave})
+       return res.status(200).json({message:`Leave ${status} successfully`,leave})
         
     } catch (err) {
-        res.status(500).json({message:err.message})
+       return res.status(500).json({message:err.message})
     }
 }
+
+
+
 
 module.exports={applyLeave,getLeaves,getAllLeaves,updateLeave}
