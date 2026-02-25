@@ -27,10 +27,12 @@ if (process.env.NODE_ENV === "production") {
     const clientPath = path.join(__dirname, "../client/dist");
     app.use(express.static(clientPath));
 
-    app.get("/*", (req, res) => {
+    // React SPA fallback (Express 5 compatible)
+    app.get("/:path(*)", (req, res) => {
         res.sendFile(path.join(clientPath, "index.html"));
     });
-} else {
+}
+else {
     app.get("/", (req, res) => {
         res.send("Swiftly Server is running in development mode (API only)");
     });
