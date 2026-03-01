@@ -64,6 +64,9 @@ const UserTable = ({ users, onUpdateRole }) => {
                         color: "var(--text-primary)",
                       }}
                     >
+                      {u.role === "Approval-Pending" && (
+                        <option  value="pending">Approval Pending</option>
+                      )}
                       <option value="employee">Employee</option>
                       <option value="manager">Manager</option>
                     </select>

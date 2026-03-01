@@ -65,6 +65,10 @@ const loginUser = async (req, res) => {
         if (!user) {
          return   res.status(400).json({ message: "Invalid email or password" })
         }
+
+        if (!["admin","manager"].includes(user.role)) {
+            return res.status(403).json({ message: "Verification Pending" });
+        }
         //  check for pass
         const passMatch = await bcrypt.compare(password, user.password);
         if (!passMatch) {
