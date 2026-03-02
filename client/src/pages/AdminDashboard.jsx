@@ -48,6 +48,16 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
+  const handleDeleteUser = async (id) => {
+    try {
+      await api.delete(`/api/user/deleteUser/${id}`);
+      toast.success("User deleted successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to delete user");
+    }
+  };
+
   const handleUpdateRole = async (id, role) => {
     try {
       await api.put(`/api/user/updateRole/${id}`, { role });
@@ -102,7 +112,7 @@ const AdminDashboard = () => {
     }
     switch (activeTab) {
       case "users":
-        return <UserTable users={users} onUpdateRole={handleUpdateRole} />;
+        return <UserTable users={users} onUpdateRole={handleUpdateRole} onDeleteUser={handleDeleteUser} />;
       case "leaves":
         return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} />;
       case "reimbursements":
