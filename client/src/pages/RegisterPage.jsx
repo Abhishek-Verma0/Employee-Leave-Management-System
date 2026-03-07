@@ -79,7 +79,7 @@ const RegisterPage = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
+                placeholder="Your Name"
                 required
                 className="w-full bg-transparent text-sm outline-none"
                 style={{ color: "var(--text-primary)" }}
