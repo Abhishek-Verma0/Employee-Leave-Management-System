@@ -1,141 +1,185 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import toast from "react-hot-toast";
-import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
+
+import { auth } from "../firebase";
+
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { setUser } = useAuth();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+
     try {
-      const user = await login(email, password);
-      toast.success("Logged in successfully");
-      navigate(`/${user.role}`);
-    } catch (err) {
-      const msg = err.response?.data?.message || "Login failed";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setLoading(false);
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData
+      );
+
+      const data = response.data;
+
+      localStorage.setItem(
+        "token",
+        data.token
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+
+      alert("Login Success");
+
+      navigate(`/${data.user.role}`);
+
+    } catch (error) {
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        "Login Failed"
+      );
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(
+        auth,
+        provider
+      );
+
+      const googleUser = result.user;
+
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/google-login",
+        {
+          name: googleUser.displayName,
+          email: googleUser.email,
+        }
+      );
+
+      const data = response.data;
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+      setUser(data.user);
+      navigate(`/${data.user.role}`);
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        error.message
+      );
     }
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8">
-      <div
-        className="w-full max-w-sm rounded-xl border p-6"
-        style={{
-          backgroundColor: "var(--bg-card)",
-          borderColor: "var(--border-color)",
-        }}
-      >
-        <h1
-          className="mb-1 text-xl font-bold"
-          style={{ color: "var(--text-primary)" }}
-        >
+    <div className="flex items-center justify-center py-8 px-4">
+      <div className="w-full max-w-md border rounded-2xl p-6 shadow-md">
+
+        <h1 className="text-3xl font-bold mb-2">
           Welcome back
         </h1>
-        <p
-          className="mb-6 text-sm"
-          style={{ color: "var(--text-secondary)" }}
-        >
+
+        <p className="text-gray-500 mb-6">
           Sign in to your account
         </p>
 
-        {error && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
-            <FiAlertCircle size={16} className="shrink-0" />
-            {error}
-          </div>
-        )}
+        <form onSubmit={handleSubmit}>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label
-              className="mb-1 block text-xs font-medium"
-              style={{ color: "var(--text-secondary)" }}
-            >
+          <div className="mb-4">
+            <label className="block mb-2">
               Email
             </label>
-            <div
-              className="flex items-center gap-2 rounded-lg border px-3 py-2"
-              style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--bg-secondary)",
-              }}
-            >
-              <FiMail size={14} style={{ color: "var(--text-secondary)" }} />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="w-full bg-transparent text-sm outline-none"
-                style={{ color: "var(--text-primary)" }}
-              />
-            </div>
+
+            <input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-3 outline-none"
+              required
+            />
           </div>
 
-          <div>
-            <label
-              className="mb-1 block text-xs font-medium"
-              style={{ color: "var(--text-secondary)" }}
-            >
+          <div className="mb-4">
+            <label className="block mb-2">
               Password
             </label>
-            <div
-              className="flex items-center gap-2 rounded-lg border px-3 py-2"
-              style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--bg-secondary)",
-              }}
-            >
-              <FiLock size={14} style={{ color: "var(--text-secondary)" }} />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full bg-transparent text-sm outline-none"
-                style={{ color: "var(--text-primary)" }}
-              />
-            </div>
+
+            <input
+              type="password"
+              name="password"
+              placeholder="********"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-3 outline-none"
+              required
+            />
           </div>
 
           <button
             type="submit"
-            disabled={loading}
-            className="cursor-pointer rounded-lg py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
-            style={{ backgroundColor: "#6366f1" }}
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            Sign In
           </button>
+
         </form>
 
-        <p
-          className="mt-4 text-center text-xs"
-          style={{ color: "var(--text-secondary)" }}
+        <button
+          onClick={handleGoogleLogin}
+          className="w-full mt-4 border py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100"
         >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="google"
+            className="w-5 h-5"
+          />
+
+          Continue with Google
+        </button>
+
+        <p className="text-center mt-6">
           Don't have an account?{" "}
+
           <Link
             to="/register"
-            className="font-medium"
-            style={{ color: "#6366f1" }}
+            className="text-indigo-600"
           >
             Register
           </Link>
         </p>
+
       </div>
     </div>
   );

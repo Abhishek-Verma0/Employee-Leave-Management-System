@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { FiUser, FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
+import { auth } from "../firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -149,6 +151,17 @@ const RegisterPage = () => {
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full mt-4 border border-gray-300 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100"
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="google"
+              className="w-5 h-5"
+            />
+            Continue with Google
+          </button>
         </form>
 
         <p
@@ -167,6 +180,21 @@ const RegisterPage = () => {
       </div>
     </div>
   );
+};
+const handleGoogleLogin = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+
+    const result = await signInWithPopup(auth, provider);
+
+    console.log(result.user);
+
+    alert("Google Login Success");
+
+  } catch (error) {
+    console.log(error);
+    alert(error.message);
+  }
 };
 
 export default RegisterPage;
