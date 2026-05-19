@@ -23,6 +23,16 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const { setUser } = useAuth();
+  const getRedirectPath = (role) => {
+
+  const validRoles = {
+    employee: "/employee",
+    manager: "/manager",
+    admin: "/admin",
+  };
+
+  return validRoles[role] || "/";
+};
 
   const [showPassword, setShowPassword] =
     useState(false);
@@ -68,8 +78,7 @@ const LoginPage = () => {
 
       toast.success("Login Success");
 
-      navigate(`/${data.user.role}`);
-
+      navigate(getRedirectPath(data.user.role));
     } catch (error) {
 
       console.log(error);
@@ -117,8 +126,7 @@ const LoginPage = () => {
         "Google Login Success"
       );
 
-      navigate(`/${data.user.role}`);
-
+      navigate(getRedirectPath(data.user.role));
     } catch (error) {
 
       console.log(error);
