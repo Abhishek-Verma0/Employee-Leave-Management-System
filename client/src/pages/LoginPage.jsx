@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import { useAuth } from "../context/AuthContext";
+
+import toast from "react-hot-toast";
+
+import {
+  FiEye,
+  FiEyeOff,
+} from "react-icons/fi";
 
 import { auth } from "../firebase";
 
@@ -11,8 +19,13 @@ import {
 } from "firebase/auth";
 
 const LoginPage = () => {
+
   const navigate = useNavigate();
+
   const { setUser } = useAuth();
+
+  const [showPassword, setShowPassword] =
+    useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -20,16 +33,20 @@ const LoginPage = () => {
   });
 
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     try {
+
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
         formData
@@ -47,14 +64,17 @@ const LoginPage = () => {
         JSON.stringify(data.user)
       );
 
-      alert("Login Success");
+      setUser(data.user);
+
+      toast.success("Login Success");
 
       navigate(`/${data.user.role}`);
 
     } catch (error) {
+
       console.log(error);
 
-      alert(
+      toast.error(
         error.response?.data?.message ||
         "Login Failed"
       );
@@ -62,14 +82,17 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async () => {
+
     try {
 
-      const provider = new GoogleAuthProvider();
+      const provider =
+        new GoogleAuthProvider();
 
-      const result = await signInWithPopup(
-        auth,
-        provider
-      );
+      const result =
+        await signInWithPopup(
+          auth,
+          provider
+        );
 
       const googleUser = result.user;
 
@@ -87,14 +110,20 @@ const LoginPage = () => {
         "user",
         JSON.stringify(data.user)
       );
+
       setUser(data.user);
+
+      toast.success(
+        "Google Login Success"
+      );
+
       navigate(`/${data.user.role}`);
 
     } catch (error) {
 
       console.log(error);
 
-      alert(
+      toast.error(
         error.response?.data?.message ||
         error.message
       );
@@ -103,6 +132,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center py-8 px-4">
+
       <div className="w-full max-w-md border rounded-2xl p-6 shadow-md">
 
         <h1 className="text-3xl font-bold mb-2">
@@ -116,6 +146,7 @@ const LoginPage = () => {
         <form onSubmit={handleSubmit}>
 
           <div className="mb-4">
+
             <label className="block mb-2">
               Email
             </label>
@@ -129,22 +160,51 @@ const LoginPage = () => {
               className="w-full border rounded-lg px-4 py-3 outline-none"
               required
             />
+
           </div>
 
           <div className="mb-4">
+
             <label className="block mb-2">
               Password
             </label>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="********"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-4 py-3 outline-none"
-              required
-            />
+            <div className="flex items-center border rounded-lg px-4 py-3">
+
+              <input
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                name="password"
+                placeholder="********"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full outline-none"
+                required
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPassword(
+                    !showPassword
+                  )
+                }
+                className="text-gray-500"
+              >
+
+                {showPassword ? (
+                  <FiEyeOff size={18} />
+                ) : (
+                  <FiEye size={18} />
+                )}
+
+              </button>
+
+            </div>
+
           </div>
 
           <button
@@ -160,6 +220,7 @@ const LoginPage = () => {
           onClick={handleGoogleLogin}
           className="w-full mt-4 border py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100"
         >
+
           <img
             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
             alt="google"
@@ -167,9 +228,11 @@ const LoginPage = () => {
           />
 
           Continue with Google
+
         </button>
 
         <p className="text-center mt-6">
+
           Don't have an account?{" "}
 
           <Link
@@ -178,9 +241,11 @@ const LoginPage = () => {
           >
             Register
           </Link>
+
         </p>
 
       </div>
+
     </div>
   );
 };

@@ -1,64 +1,83 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
 
-const { loginUser, registerUser } = require("../controllers/authController")
+const router = express.Router();
 
-const validate = require("../middleware/validate")
+const {
+  loginUser,
+  registerUser,
+} = require("../controllers/authController");
+
+const validate =
+  require("../middleware/validate");
 
 const {
   registerSchema,
   loginSchema,
-} = require("../validators/auth.validator")
+} = require("../validators/auth.validator");
 
-const User = require("../models/User")
+const {
+  authLimiter,
+} = require("../middleware/rateLimiter");
+
+const User =
+  require("../models/User");
+
 // Register Route
 router.post(
   "/register",
+  authLimiter,
   validate(registerSchema),
   registerUser
-)
+);
 
 // Login Route
 router.post(
   "/login",
+  authLimiter,
   validate(loginSchema),
   loginUser
-)
+);
 
 // Google Login Route
-router.post("/google-login", async (req, res) => {
-  try {
+router.post(
+  "/google-login",
+  async (req, res) => {
 
-    const { name, email } = req.body
+    try {
 
-    let user = await User.findOne({ email })
+      const { name, email } =
+        req.body;
 
-    if (!user) {
+      let user =
+        await User.findOne({ email });
 
-      user = await User.create({
-        name,
-        email,
-        password: "google-auth",
-        role: "employee",
-      })
+      if (!user) {
+
+        user = await User.create({
+          name,
+          email,
+          password: "google-auth",
+          role: "employee",
+        });
+
+      }
+
+      res.status(200).json({
+        success: true,
+        user,
+      });
+
+    } catch (error) {
+
+      console.log(error);
+
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
 
     }
-
-    res.json({
-      success: true,
-      user,
-    })
-
-  } catch (error) {
-
-    console.log(error)
-
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-    })
-
   }
-})
+);
 
-module.exports = router
+module.exports = router;
