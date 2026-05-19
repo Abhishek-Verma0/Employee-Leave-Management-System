@@ -17,6 +17,17 @@ const App = () => {
 
   const { user, loading } = useAuth();
 
+  // Safe role-based redirect function
+  const getRedirectPath = (role) => {
+    const validRoles = {
+      employee: "/employee",
+      manager: "/manager",
+      admin: "/admin",
+    };
+
+    return validRoles[role] || "/";
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -46,7 +57,7 @@ const App = () => {
             element={
               user ? (
                 <Navigate
-                  to={`/${user.role}`}
+                  to={getRedirectPath(user.role)}
                   replace
                 />
               ) : (
@@ -60,7 +71,7 @@ const App = () => {
             element={
               user ? (
                 <Navigate
-                  to={`/${user.role}`}
+                  to={getRedirectPath(user.role)}
                   replace
                 />
               ) : (
@@ -74,7 +85,7 @@ const App = () => {
             element={
               user ? (
                 <Navigate
-                  to={`/${user.role}`}
+                  to={getRedirectPath(user.role)}
                   replace
                 />
               ) : (
