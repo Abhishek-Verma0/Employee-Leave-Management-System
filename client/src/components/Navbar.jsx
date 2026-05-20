@@ -25,14 +25,14 @@ const Navbar = () => {
 
   return (
     <nav
-      className="sticky top-0 z-50 border-b px-4 py-3 sm:px-6"
+      className="sticky top-0 z-50 border-b px-3 sm:px-4 py-3 sm:px-6"
       style={{
         backgroundColor: "var(--bg-nav)",
         borderColor: "var(--border-color)",
         boxShadow: "0 1px 3px var(--shadow-color)",
       }}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <Link
           to={user ? getDashboardPath() : "/"}
@@ -80,19 +80,19 @@ const Navbar = () => {
           {user ? (
             <button
               onClick={handleLogout}
-              className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors"
+              className="flex cursor-pointer items-center gap-1 rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-smrounded-lg px-3 py-2 text-sm font-medium text-white transition-colors"
               style={{ backgroundColor: "#6366f1" }}
             >
               <FiLogOut size={14} />
               Logout
             </button>
           ) : (
-              <div className="flex items-center gap-2">
+             <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                 <Link
                   to="/login"
                   onMouseEnter={() => setHovered("login")}
                   onMouseLeave={() => setHovered(null)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold border border-indigo-500 transition-all duration-300
+                  className={`inline-flex items-center gap-2 rounded-xl px-4 sm:px-6 py-2.5 sm:py-3 text-sm font-semibold border border-indigo-500 transition-all duration-300
                   ${
                     hovered === "login"
                       ? "bg-indigo-500 text-white"
@@ -157,7 +157,7 @@ const Navbar = () => {
                   handleLogout();
                   setMenuOpen(false);
                 }}
-                className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white"
+                className="flex cursor-pointer items-center gap-1 rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-sm rounded-lg px-3 py-2 text-sm font-medium text-white"
                 style={{ backgroundColor: "#6366f1" }}
               >
                 <FiLogOut size={14} />
