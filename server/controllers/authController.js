@@ -30,20 +30,10 @@ const registerUser = async (req, res, next) => {
             password: hashedPassword,
         });
 
-        // gen JWT token
-        const token = await jwt.sign(
-            {
-                id: user._id,
-                role: user.role,
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: "2h" },
-        );
-
         //  response send
         res.status(201).json({
             success: true,
-            token,
+            message: "Registration successful! Please wait for an admin to verify and approve your account.",
             user: {
                 id: user._id,
                 name: user.name,
