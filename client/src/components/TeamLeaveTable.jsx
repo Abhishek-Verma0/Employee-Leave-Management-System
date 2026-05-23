@@ -1,7 +1,112 @@
+import { useState } from "react";
 import StatusBadge from "./StatusBadge";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const TeamLeaveTable = ({ leaves, onUpdate }) => {
+    const [statusFilter, setStatusFilter] = useState("all");
+    const filteredLeaves =
+  statusFilter === "all"
+    ? leaves
+    : leaves.filter((l) => l.status === statusFilter);
+    const exportCSV = () => {
+    const headers = [
+      "Employee",
+      "From Date",
+      "To Date",
+      "Reason",
+      "Status",
+    ];
+
+    const rows = filteredLeaves.map((l) => [
+      l.user?.email || "N/A",
+      new Date(l.fromDate).toLocaleDateString(),
+      new Date(l.toDate).toLocaleDateString(),
+      l.reason,
+      l.status,
+    ]);
+
+    const escapeCSVCell = (cell) => {
+  const value = String(cell ?? "");
+
+  const safeValue = /^[=+\-@]/.test(value)
+    ? `'${value}`
+    : value;
+
+  return `"${safeValue.replace(/"/g, '""')}"`;
+};
+
+const csvContent =
+  [headers, ...rows]
+    .map((row) => row.map(escapeCSVCell).join(","))
+    .join("\n");
+
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "leave-records.csv");
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportPDF = () => {
+    const doc = new jsPDF();
+
+    doc.text("Employee Leave Records", 14, 15);
+
+    autoTable(doc, {
+      startY: 22,
+      head: [["Employee", "From", "To", "Reason", "Status"]],
+      body: filteredLeaves.map((l) => [
+        l.user?.email || "N/A",
+        new Date(l.fromDate).toLocaleDateString(),
+        new Date(l.toDate).toLocaleDateString(),
+        l.reason,
+        l.status,
+      ]),
+    });
+
+    doc.save("leave-records.pdf");
+  };
   return (
+    <>
+  <div className="mb-4 flex flex-wrap gap-3">
+    <select
+  value={statusFilter}
+  onChange={(e) => setStatusFilter(e.target.value)}
+  className="rounded-lg border px-3 py-2 text-sm outline-none"
+  style={{
+    borderColor: "var(--border-color)",
+    backgroundColor: "var(--bg-card)",
+    color: "var(--text-primary)",
+  }}
+>
+  <option value="all">All Status</option>
+  <option value="pending">Pending</option>
+  <option value="approved">Approved</option>
+  <option value="rejected">Rejected</option>
+</select>
+    <button
+      onClick={exportCSV}
+      className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+    >
+      Export CSV
+    </button>
+
+    <button
+      onClick={exportPDF}
+      className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+    >
+      Export PDF
+    </button>
+  </div>
     <div
       className="overflow-x-auto rounded-xl border"
       style={{
@@ -34,7 +139,7 @@ const TeamLeaveTable = ({ leaves, onUpdate }) => {
             </tr>
           </thead>
           <tbody>
-            {leaves.map((l) => (
+            {filteredLeaves.map((l) => (
               <tr
                 key={l._id}
                 style={{ borderBottom: "1px solid var(--border-color)" }}
@@ -90,6 +195,7 @@ const TeamLeaveTable = ({ leaves, onUpdate }) => {
         </table>
       )}
     </div>
+    </>
   );
 };
 

@@ -6,7 +6,9 @@
     "install": "cd server && npm install && cd ../client && npm install",
     "build": "cd server && npm install && cd ../client && npm install --include=dev && npm run build",
     "start": "cd server && node index.js"
-    
+  },
+  "dependencies": {
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8"
   }
-
 }
