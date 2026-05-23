@@ -121,7 +121,7 @@ const UserTable = ({ users, onUpdateRole, onDeleteUser }) => {
             No matching users found
           </p>
         ) : (
-          <table className="w-full text-left ">
+          <table className="w-full text-left text-sm">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)" }}>
                 {["Name", "Email", "Role", "Actions", "Delete"].map((h) => (
