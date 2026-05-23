@@ -73,19 +73,17 @@ const LandingPage = () => {
               <>
                 <Link
                   to="/register"
-                  className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors"
-                  style={{ backgroundColor: "#6366f1" }}
+                  className="group inline-flex items-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-500 hover:text-white hover:shadow-md hover:scale-[1.02]"
                 >
                   Get Started
-                  <FiArrowRight size={16} />
+                  <FiArrowRight
+                    size={16}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
                 </Link>
                 <Link
                   to="/login"
-                  className="rounded-lg px-6 py-3 text-sm font-semibold transition-colors"
-                  style={{
-                    color: "#6366f1",
-                    border: "1px solid #6366f1",
-                  }}
+                  className="group inline-flex items-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-500 hover:text-white hover:shadow-sm hover:scale-[1.01]"
                 >
                   Sign In
                 </Link>

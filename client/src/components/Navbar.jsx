@@ -10,6 +10,7 @@ const Navbar = () => {
   const { dark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hovered, setHovered] = useState(null);
 
   const handleLogout = () => {
     logout();
@@ -86,25 +87,37 @@ const Navbar = () => {
               Logout
             </button>
           ) : (
-            <div className="flex gap-2">
-              <Link
-                to="/login"
-                className="rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-                style={{
-                  color: "#6366f1",
-                  border: "1px solid #6366f1",
-                }}
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
-                style={{ backgroundColor: "#6366f1" }}
-              >
-                Register
-              </Link>
-            </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  onMouseEnter={() => setHovered("login")}
+                  onMouseLeave={() => setHovered(null)}
+                  className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold border border-indigo-500 transition-all duration-300
+                  ${
+                    hovered === "login"
+                      ? "bg-indigo-500 text-white"
+                      : "bg-transparent text-indigo-500"
+                  }
+                `}
+                >
+                  Login
+                </Link>
+
+                <Link
+                  to="/register"
+                  onMouseEnter={() => setHovered("register")}
+                  onMouseLeave={() => setHovered(null)}
+                  className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold border border-indigo-500 transition-all duration-300
+                    ${
+                      hovered === "register"
+                        ? "bg-indigo-500 text-white"
+                        : "bg-transparent text-indigo-500"
+                    }
+                  `}
+                >
+                  Register
+                </Link>
+              </div>
           )}
         </div>
       </div>
@@ -155,16 +168,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-lg px-4 py-2 text-sm font-medium"
-                  style={{ color: "#6366f1", border: "1px solid #6366f1" }}
+                  className="group inline-flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-500 hover:text-white hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/10"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-lg px-4 py-2 text-sm font-medium text-white"
-                  style={{ backgroundColor: "#6366f1" }}
+                  className="group inline-flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold border border-indigo-500 bg-indigo-500 text-white transition-all duration-300 ease-out hover:bg-transparent hover:text-indigo-500 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/10"
                 >
                   Register
                 </Link>
