@@ -91,4 +91,31 @@ const updateLeave = async(req, res) => {
 
 
 
-module.exports={applyLeave,getLeaves,getAllLeaves,updateLeave}
+const getLeaveBalance = async (req, res) => {
+    try {
+        const user = await require("../models/User").findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const approvedLeaves = await Leave.find({ user: req.user.id, status: "approved" });
+        let usedDays = 0;
+        for (const leave of approvedLeaves) {
+            const from = new Date(leave.fromDate);
+            const to = new Date(leave.toDate);
+            const diffDays = Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
+            usedDays += diffDays;
+        }
+
+        const remaining = Math.max(0, user.totalLeaveDays - usedDays);
+        return res.status(200).json({
+            totalLeaveDays: user.totalLeaveDays,
+            usedLeaveDays: usedDays,
+            remainingLeaveDays: remaining
+        });
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports={applyLeave,getLeaves,getAllLeaves,updateLeave,getLeaveBalance}

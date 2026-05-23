@@ -17,12 +17,15 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required:true
+    },
+    totalLeaveDays: {
+        type: Number,
+        default: 20
     }
     
 },
     {
         timestamps:true
     }
-)
 
 module.exports=mongoose.model("User",userSchema)
