@@ -39,7 +39,7 @@ const UserTable = ({ users, onUpdateRole, onDeleteUser }) => {
             No users
           </p>
         ) : (
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-left ">
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)" }}>
                 {["Name", "Email", "Role", "Actions", "Delete"].map((h) => (
@@ -66,12 +66,12 @@ const UserTable = ({ users, onUpdateRole, onDeleteUser }) => {
                     {u.name}
                   </td>
                   <td
-                    className="whitespace-nowrap px-4 py-3"
+                    className="w-full overflow-x-auto whitespace-nowrap px-4 py-3"
                     style={{ color: "var(--text-primary)" }}
                   >
                     {u.email}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3">
                     <RoleBadge role={u.role} />
                   </td>
                   <td className="px-4 py-3">
