@@ -216,3 +216,4 @@ const UserTable = ({ users, onUpdateRole, onDeleteUser }) => {
 };
 
 export default UserTable;
+
