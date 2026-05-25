@@ -22,9 +22,9 @@ const RegisterPage = () => {
     setError("");
     setLoading(true);
     try {
-      const user = await register(name, email, password);
-      toast.success("Account created successfully");
-      navigate(`/${user.role}`);
+      const data = await register(name, email, password);
+      toast.success(data.message || "Account created successfully! Please wait for Admin approval.");
+      navigate("/login");
     } catch (err) {
       const msg = err.response?.data?.message || "Registration failed";
       setError(msg);
