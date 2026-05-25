@@ -28,14 +28,17 @@ const EmployeeDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [lRes, rRes, bRes] = await Promise.all([
+      const [lRes, rRes, bRes] = await Promise.allSettled([
         api.get("/api/leave/getLeaves"),
         api.get("/api/reimbursement/getReimbursement"),
         api.get("/api/leave/balance"),
       ]);
-      setLeaves(lRes.data);
-      setReimbursements(rRes.data);
-      setLeaveBalance(bRes.data);
+      if (lRes.status !== "fulfilled" || rRes.status !== "fulfilled") {
+        throw new Error("Failed to load core dashboard data");
+      }
+      setLeaves(lRes.value.data);
+      setReimbursements(rRes.value.data);
+      setLeaveBalance(bRes.status === "fulfilled" ? bRes.value.data : null);
     } catch {
       toast.error("Failed to load data");
     } finally {
