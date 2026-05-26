@@ -8,6 +8,8 @@
     "start": "cd server && node index.js"
   },
   "dependencies": {
+    "@imagekit/nodejs": "^7.6.2",
+    "imagekit": "^6.0.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8"
   }
