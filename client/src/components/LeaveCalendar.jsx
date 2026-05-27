@@ -10,6 +10,28 @@ const isSameDay = (d1, d2) => {
 };
 
 const calendarStyles = `
+  .react-calendar {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    padding: 10px;
+  }
+
+  .react-calendar button {
+    color: var(--text-primary);
+  }
+
+  .react-calendar__navigation button {
+    background: transparent;
+  }
+
+  .react-calendar__tile {
+    border-radius: 9999px;
+  }
+
   .approved {
     background: #22c55e !important;
     color: white !important;
@@ -28,10 +50,16 @@ const calendarStyles = `
     border-radius: 9999px;
   }
 `;
-
 const LeaveCalendar = ({ leaves }) => {
   return (
-    <div className="mt-6 w-full rounded-2xl border bg-white p-4 shadow-sm">
+   <div
+  className="mt-6 w-full rounded-2xl border p-4 shadow-sm"
+  style={{
+    backgroundColor: "var(--bg-card)",
+    borderColor: "var(--border-color)",
+    color: "var(--text-primary)",
+  }}
+>
       <style>{calendarStyles}</style>
 
       <h2 className="mb-4 text-lg font-semibold">
