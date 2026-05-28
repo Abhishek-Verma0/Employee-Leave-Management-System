@@ -31,8 +31,8 @@ const EmployeeDashboard = () => {
         api.get("/api/leave/getLeaves"),
         api.get("/api/reimbursement/getReimbursement"),
       ]);
-      setLeaves(lRes.data);
-      setReimbursements(rRes.data);
+      setLeaves(lRes.data.data || lRes.data);
+      setReimbursements(rRes.data.data || rRes.data);
     } catch {
       toast.error("Failed to load data");
     } finally {
