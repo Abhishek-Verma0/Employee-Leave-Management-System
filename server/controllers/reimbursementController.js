@@ -1,6 +1,7 @@
 const Reimbursement = require("../models/Reimbursement");
 const imagekit = require("../config/imagekit");
 const { toFile } = require("@imagekit/nodejs");
+const mongoose = require("mongoose");
 
 //  helper: upload buffer to ImageKit
 const uploadToImageKit = async (fileBuffer, originalName) => {
@@ -26,6 +27,10 @@ const deleteFromImageKit = async (fileId) => {
 const applyReimbursement = async (req, res, next) => {
   try {
     const { amount, expenseDate, description } = req.body;
+
+    if (amount <= 0) {
+      return res.status(400).json({ message: "Amount must be greater than 0" });
+    }
 
     let billUrl = null;
     let billFileId = null;
@@ -73,6 +78,9 @@ const getReimbursement = async (req, res, next) => {
 const updateReimbursement = async (req, res, next) => {
   try {
     const reimbursementId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(reimbursementId)) {
+      return res.status(400).json({ message: "Invalid reimbursement ID format" });
+    }
     const { status } = req.body;
 
     const reimbursement =
@@ -106,7 +114,7 @@ const updateReimbursement = async (req, res, next) => {
 
 const getAllReimbursement = async (req, res, next) => {
   try {
-    const reimbursements = await Reimbursement.find({ user: { $ne: req.user.id } }).populate("user", "email").sort({ createdAt: -1 });
+    const reimbursements = await Reimbursement.find({ user: { $ne: req.user.id } }).populate("user", "name email role").sort({ createdAt: -1 });
     return res.status(200).json({ reimbursements });
   } catch (err) {
     next(err);
@@ -117,6 +125,9 @@ const getAllReimbursement = async (req, res, next) => {
 
 const updateBill = async (req, res, next) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid reimbursement ID format" });
+    }
     const reimbursement = await Reimbursement.findById(req.params.id);
     if (!reimbursement) {
       return res.status(404).json({ message: "Reimbursement not found" });
@@ -152,6 +163,9 @@ const updateBill = async (req, res, next) => {
 
 const deleteBill = async (req, res, next) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid reimbursement ID format" });
+    }
     const reimbursement = await Reimbursement.findById(req.params.id);
     if (!reimbursement) {
       return res.status(404).json({ message: "Reimbursement not found" });

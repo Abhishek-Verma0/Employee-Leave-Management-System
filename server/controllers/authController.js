@@ -7,7 +7,8 @@ const { success } = require("zod");
 
 const registerUser = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, password } = req.body;
+        const email = req.body.email ? req.body.email.toLowerCase() : "";
 
         //  user exist or not
         const userExist = await User.findOne({ email });
@@ -60,7 +61,8 @@ const registerUser = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const { password } = req.body;
+        const email = req.body.email ? req.body.email.toLowerCase() : "";
         //  if user exist
         const user = await User.findOne({ email });
         if (!user) {
@@ -79,7 +81,7 @@ const loginUser = async (req, res, next) => {
         //  check for pass
         const passMatch = await bcrypt.compare(password, user.password);
         if (!passMatch) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(400).json({ success: false, message: "Invalid email or password" });
         }
 
         //  generate jwt

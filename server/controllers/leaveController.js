@@ -1,4 +1,5 @@
 const Leave = require("../models/Leave")
+const mongoose = require("mongoose");
 
 const applyLeave = async (req, res)=> {
     try {
@@ -49,7 +50,7 @@ const getLeaves = async (req, res) => {
 
 const getAllLeaves = async (req, res) => {
     try {
-        const leaves = await Leave.find({user:{$ne:req.user.id}}).populate("user", "email").sort({ createdAt: -1 })
+        const leaves = await Leave.find({user:{$ne:req.user.id}}).populate("user", "name email role").sort({ createdAt: -1 })
         return res.status(200).json(leaves);
     } catch (err) {
         return res.status(500).json({message:err.message})
@@ -62,6 +63,9 @@ const getAllLeaves = async (req, res) => {
 const updateLeave = async(req, res) => {
     try {
         const leaveId = req.params.id
+        if (!mongoose.Types.ObjectId.isValid(leaveId)) {
+            return res.status(400).json({ message: "Invalid leave ID format" });
+        }
         const { status } = req.body
         
         const leave =await Leave.findById(leaveId).populate("user")
