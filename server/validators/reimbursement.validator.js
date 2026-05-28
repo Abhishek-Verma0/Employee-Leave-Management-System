@@ -14,11 +14,11 @@ const reimbursementSchema = z.object({
 });
 
 const updateReimbursementStatusSchema = z.object({
-    status: z.enum(["pending", "approved", "rejected"], {
-        errorMap: () => ({
-            message: "Status must be pending, approved, or rejected"
-        })
-    })
+    status: z.enum(
+        ["pending", "approved", "rejected"],
+        {
+            error: "Status must be pending, approved, or rejected"
+        }
+    )
 });
-
 module.exports = { reimbursementSchema, updateReimbursementStatusSchema };
