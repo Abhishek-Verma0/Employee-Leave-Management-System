@@ -35,7 +35,7 @@ const AdminDashboard = () => {
         api.get("/api/reimbursement/getAll"),
       ]);
       setUsers(uRes.data.data || uRes.data.user || []);
-      setAllLeaves(lRes.data.data || lRes.data);
+      setAllLeaves(lRes.data.data || lRes.data || []);
       setAllReimb(rRes.data.data || rRes.data.reimbursements || []);
     } catch {
       toast.error("Failed to load data");

@@ -33,19 +33,18 @@ const EmployeeDashboard = () => {
         api.get("/api/reimbursement/getReimbursement"),
         api.get("/api/leave/balance"),
       ]);
+      if (lRes.status !== "fulfilled" || rRes.status !== "fulfilled") {
+        throw new Error("Failed to load core dashboard data");
+      }
 
-if (lRes.status !== "fulfilled" || rRes.status !== "fulfilled") {
-  throw new Error("Failed to load core dashboard data");
-}
+      setLeaves(lRes.value.data?.data || lRes.value.data || []);
+      setReimbursements(rRes.value.data?.data || rRes.value.data || []);
 
-setLeaves(lRes.value.data?.data || lRes.value.data);
-setReimbursements(rRes.value.data?.data || rRes.value.data);
-
-setLeaveBalance(
-  bRes.status === "fulfilled"
-    ? bRes.value.data
-    : null
-);
+      setLeaveBalance(
+        bRes.status === "fulfilled"
+          ? (bRes.value.data?.data || bRes.value.data || null)
+          : null
+      );
     } catch {
       toast.error("Failed to load data");
     } finally {

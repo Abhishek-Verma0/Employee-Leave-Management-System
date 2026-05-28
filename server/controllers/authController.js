@@ -31,15 +31,29 @@ const registerUser = asyncHandler(async (req, res) => {
         });
     }
 
-//  user exist or not
-const userExist = await User.findOne({ email });
+    if (typeof name !== "string" || !name.trim()) {
+        return res.status(400).json({
+            success: false,
+            message: "Name is required"
+        });
+    }
 
-if (userExist) {
-    return res.status(400).json({
-        success: false,
-        message: "user already exist"
-    });
-}
+    if (typeof password !== "string" || password.trim().length < 6) {
+        return res.status(400).json({
+            success: false,
+            message: "Password must be at least 6 characters"
+        });
+    }
+
+    //  user exist or not
+    const userExist = await User.findOne({ email });
+
+    if (userExist) {
+        return res.status(400).json({
+            success: false,
+            message: "user already exist"
+        });
+    }
      
     //  hashing pass
     const salt = await bcrypt.genSalt(10);
@@ -47,7 +61,7 @@ if (userExist) {
 
     //  create user
     const user = await User.create({
-        name,
+        name: name.trim(),
         email,
         password: hashedPassword,
     });
@@ -87,6 +101,13 @@ const loginUser = asyncHandler(async (req, res) => {
         return res.status(400).json({
             success: false,
             message: "Invalid email format"
+        });
+    }
+
+    if (typeof password !== "string" || !password.trim()) {
+        return res.status(400).json({
+            success: false,
+            message: "Password is required"
         });
     }
 

@@ -40,9 +40,9 @@ const ManagerDashboard = () => {
         api.get("/api/leave/allLeaves"),
         api.get("/api/reimbursement/getAll"),
       ]);
-      setMyLeaves(ml.data.data || ml.data);
-      setMyReimbursements(mr.data.data || mr.data);
-      setTeamLeaves(tl.data.data || tl.data);
+      setMyLeaves(ml.data.data || ml.data || []);
+      setMyReimbursements(mr.data.data || mr.data || []);
+      setTeamLeaves(tl.data.data || tl.data || []);
       setTeamReimb(tr.data.data || tr.data.reimbursements || []);
     } catch {
       toast.error("Failed to load data");
