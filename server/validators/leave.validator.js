@@ -10,4 +10,12 @@ const leaveSchema = z.object({
         .max(500, "Reason cannot exceed 500 characters"),
 });
 
-module.exports = { leaveSchema };
+const updateLeaveStatusSchema = z.object({
+    status: z.enum(["pending", "approved", "rejected"], {
+        errorMap: () => ({
+            message: "Status must be pending, approved, or rejected"
+        })
+    })
+});
+
+module.exports = { leaveSchema, updateLeaveStatusSchema };

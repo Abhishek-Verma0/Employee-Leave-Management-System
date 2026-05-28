@@ -13,4 +13,12 @@ const reimbursementSchema = z.object({
         .max(500, "Description cannot exceed 500 characters"),
 });
 
-module.exports = { reimbursementSchema };
+const updateReimbursementStatusSchema = z.object({
+    status: z.enum(["pending", "approved", "rejected"], {
+        errorMap: () => ({
+            message: "Status must be pending, approved, or rejected"
+        })
+    })
+});
+
+module.exports = { reimbursementSchema, updateReimbursementStatusSchema };
