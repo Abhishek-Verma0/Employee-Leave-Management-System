@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiClock, FiCheckCircle, FiXCircle, FiCalendar, FiDollarSign } from "react-icons/fi";
+import { FiClock, FiCheckCircle, FiXCircle, FiCalendar, FiDollarSign, FiUmbrella } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
 import StatusChart from "../components/StatusChart";
@@ -21,18 +21,31 @@ const EmployeeDashboard = () => {
   const { user } = useAuth();
   const [leaves, setLeaves] = useState([]);
   const [reimbursements, setReimbursements] = useState([]);
+  const [leaveBalance, setLeaveBalance] = useState(null);
   const [activeTab, setActiveTab] = useState("leaves");
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [lRes, rRes] = await Promise.all([
+      const [lRes, rRes, bRes] = await Promise.allSettled([
         api.get("/api/leave/getLeaves"),
         api.get("/api/reimbursement/getReimbursement"),
+        api.get("/api/leave/balance"),
       ]);
-      setLeaves(lRes.data.data || lRes.data);
-      setReimbursements(rRes.data.data || rRes.data);
+
+if (lRes.status !== "fulfilled" || rRes.status !== "fulfilled") {
+  throw new Error("Failed to load core dashboard data");
+}
+
+setLeaves(lRes.value.data?.data || lRes.value.data);
+setReimbursements(rRes.value.data?.data || rRes.value.data);
+
+setLeaveBalance(
+  bRes.status === "fulfilled"
+    ? bRes.value.data
+    : null
+);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -112,6 +125,27 @@ const EmployeeDashboard = () => {
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Employee Dashboard" />
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Leave Balance - visible only on Leaves tab */}
+      {activeTab === "leaves" && leaveBalance && (
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-4">
+          <SummaryCard
+            icon={<FiUmbrella size={18} />}
+            count={leaveBalance.remainingLeaveDays}
+            label="Remaining Leave Days"
+          />
+          <SummaryCard
+            icon={<FiCalendar size={18} />}
+            count={leaveBalance.totalLeaveDays}
+            label="Total Leave Days"
+          />
+          <SummaryCard
+            icon={<FiCheckCircle size={18} />}
+            count={leaveBalance.usedLeaveDays}
+            label="Used Leave Days"
+          />
+        </div>
+      )}
 
       {/* Summary Cards + Chart */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-5">

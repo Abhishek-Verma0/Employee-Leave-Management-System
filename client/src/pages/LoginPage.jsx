@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 
+
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -94,6 +95,7 @@ const LoginPage = () => {
             >
               Password
             </label>
+
             <div
               className="flex items-center gap-2 rounded-lg border px-3 py-2"
               style={{
@@ -102,6 +104,7 @@ const LoginPage = () => {
               }}
             >
               <FiLock size={14} style={{ color: "var(--text-secondary)" }} />
+
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}

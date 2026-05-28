@@ -2,28 +2,69 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { FiUser, FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
+import {
+  FiUser,
+  FiMail,
+  FiLock,
+  FiAlertCircle,
+  FiEye,
+  FiEyeOff,
+} from "react-icons/fi";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
+
+  const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [
+    showConfirmPassword,
+    setShowConfirmPassword,
+  ] = useState(false);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setError("");
     setLoading(true);
+
+    // Password Match Validation
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      toast.error("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const user = await register(name, email, password);
-      toast.success("Account created successfully");
-      navigate(`/${user.role}`);
+      const data = await register(
+        name,
+        email,
+        password
+      );
+
+      toast.success(
+        data.message ||
+          "Account created successfully! Please wait for Admin approval."
+      );
+
+      navigate("/login");
     } catch (err) {
-      const msg = err.response?.data?.message || "Registration failed";
+      const msg =
+        err.response?.data?.message ||
+        "Registration failed";
+
       setError(msg);
       toast.error(msg);
     } finally {
@@ -42,128 +83,297 @@ const RegisterPage = () => {
       >
         <h1
           className="mb-1 text-xl font-bold"
-          style={{ color: "var(--text-primary)" }}
+          style={{
+            color: "var(--text-primary)",
+          }}
         >
           Create account
         </h1>
+
         <p
           className="mb-6 text-sm"
-          style={{ color: "var(--text-secondary)" }}
+          style={{
+            color: "var(--text-secondary)",
+          }}
         >
           Register to get started
         </p>
 
         {error && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
-            <FiAlertCircle size={16} className="shrink-0" />
+            <FiAlertCircle
+              size={16}
+              className="shrink-0"
+            />
+
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4"
+        >
+          {/* Name */}
           <div>
             <label
               className="mb-1 block text-xs font-medium"
-              style={{ color: "var(--text-secondary)" }}
+              style={{
+                color: "var(--text-secondary)",
+              }}
             >
               Name
             </label>
+
             <div
               className="flex items-center gap-2 rounded-lg border px-3 py-2"
               style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--bg-secondary)",
+                borderColor:
+                  "var(--border-color)",
+                backgroundColor:
+                  "var(--bg-secondary)",
               }}
             >
-              <FiUser size={14} style={{ color: "var(--text-secondary)" }} />
+              <FiUser
+                size={14}
+                style={{
+                  color:
+                    "var(--text-secondary)",
+                }}
+              />
+
               <input
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
                 placeholder="Your Name"
                 required
                 className="w-full bg-transparent text-sm outline-none"
-                style={{ color: "var(--text-primary)" }}
+                style={{
+                  color:
+                    "var(--text-primary)",
+                }}
               />
             </div>
           </div>
 
+          {/* Email */}
           <div>
             <label
               className="mb-1 block text-xs font-medium"
-              style={{ color: "var(--text-secondary)" }}
+              style={{
+                color: "var(--text-secondary)",
+              }}
             >
               Email
             </label>
+
             <div
               className="flex items-center gap-2 rounded-lg border px-3 py-2"
               style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--bg-secondary)",
+                borderColor:
+                  "var(--border-color)",
+                backgroundColor:
+                  "var(--bg-secondary)",
               }}
             >
-              <FiMail size={14} style={{ color: "var(--text-secondary)" }} />
+              <FiMail
+                size={14}
+                style={{
+                  color:
+                    "var(--text-secondary)",
+                }}
+              />
+
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
                 placeholder="you@example.com"
                 required
                 className="w-full bg-transparent text-sm outline-none"
-                style={{ color: "var(--text-primary)" }}
+                style={{
+                  color:
+                    "var(--text-primary)",
+                }}
               />
             </div>
           </div>
 
+          {/* Password */}
           <div>
             <label
               className="mb-1 block text-xs font-medium"
-              style={{ color: "var(--text-secondary)" }}
+              style={{
+                color: "var(--text-secondary)",
+              }}
             >
               Password
             </label>
+
             <div
               className="flex items-center gap-2 rounded-lg border px-3 py-2"
               style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--bg-secondary)",
+                borderColor:
+                  "var(--border-color)",
+                backgroundColor:
+                  "var(--bg-secondary)",
               }}
             >
-              <FiLock size={14} style={{ color: "var(--text-secondary)" }} />
+              <FiLock
+                size={14}
+                style={{
+                  color:
+                    "var(--text-secondary)",
+                }}
+              />
+
               <input
-                type={showPassword ? "text" : "password"}
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
                 placeholder="••••••••"
                 required
                 className="w-full bg-transparent text-sm outline-none"
-                style={{ color: "var(--text-primary)" }}
+                style={{
+                  color:
+                    "var(--text-primary)",
+                }}
               />
+
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() =>
+                  setShowPassword(
+                    !showPassword
+                  )
+                }
                 className="flex items-center justify-center text-gray-500 hover:text-gray-700 focus:outline-none"
-                style={{ color: "var(--text-secondary)" }}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                style={{
+                  color:
+                    "var(--text-secondary)",
+                }}
+                aria-label={
+                  showPassword
+                    ? "Hide password"
+                    : "Show password"
+                }
               >
-                {showPassword ? <FiEyeOff size={14} /> : <FiEye size={14} />}
+                {showPassword ? (
+                  <FiEyeOff size={14} />
+                ) : (
+                  <FiEye size={14} />
+                )}
               </button>
             </div>
           </div>
 
+          {/* Confirm Password */}
+          <div>
+            <label
+              className="mb-1 block text-xs font-medium"
+              style={{
+                color: "var(--text-secondary)",
+              }}
+            >
+              Confirm Password
+            </label>
+
+            <div
+              className="flex items-center gap-2 rounded-lg border px-3 py-2"
+              style={{
+                borderColor:
+                  "var(--border-color)",
+                backgroundColor:
+                  "var(--bg-secondary)",
+              }}
+            >
+              <FiLock
+                size={14}
+                style={{
+                  color:
+                    "var(--text-secondary)",
+                }}
+              />
+
+              <input
+                type={
+                  showConfirmPassword
+                    ? "text"
+                    : "password"
+                }
+                value={confirmPassword}
+                onChange={(e) =>
+                  setConfirmPassword(
+                    e.target.value
+                  )
+                }
+                placeholder="••••••••"
+                required
+                className="w-full bg-transparent text-sm outline-none"
+                style={{
+                  color:
+                    "var(--text-primary)",
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowConfirmPassword(
+                    !showConfirmPassword
+                  )
+                }
+                className="flex items-center justify-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                style={{
+                  color:
+                    "var(--text-secondary)",
+                }}
+                aria-label={
+                  showConfirmPassword
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
+              >
+                {showConfirmPassword ? (
+                  <FiEyeOff size={14} />
+                ) : (
+                  <FiEye size={14} />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
             className="cursor-pointer rounded-lg py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
-            style={{ backgroundColor: "#6366f1" }}
+            style={{
+              backgroundColor: "#6366f1",
+            }}
           >
-            {loading ? "Creating account..." : "Create Account"}
+            {loading
+              ? "Creating account..."
+              : "Create Account"}
           </button>
         </form>
 
         <p
           className="mt-4 text-center text-xs"
-          style={{ color: "var(--text-secondary)" }}
+          style={{
+            color: "var(--text-secondary)",
+          }}
         >
           Already have an account?{" "}
           <Link
