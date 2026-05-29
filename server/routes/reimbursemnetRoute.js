@@ -2,7 +2,27 @@ const express = require("express")
 const router = express.Router()
 const multer = require("multer")
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }) // 5MB limit
+const upload = multer({
+    storage: multer.memoryStorage(),
+
+    limits: { fileSize: 5 * 1024 * 1024 },
+
+    fileFilter: (req, file, cb) => {
+
+        const allowedTypes = [
+            "image/png",
+            "image/jpeg",
+            "image/jpg",
+            "application/pdf"
+        ];
+
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error("Only PNG, JPG, JPEG, and PDF files are allowed"));
+        }
+    }
+});
 
 const { applyReimbursement, getReimbursement, getAllReimbursement, updateReimbursement, updateBill, deleteBill } = require("../controllers/reimbursementController")
 const { authMiddleware, checkRole } = require("../middleware/authMiddleware")
