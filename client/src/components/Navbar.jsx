@@ -65,7 +65,7 @@ const Navbar = () => {
               title="Toggle theme"
             >
               {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
-              <span>Theme</span>
+              <span>{dark ? "Dark Mode" : "Light Mode"}</span>
             </button>
 
             {user ? (

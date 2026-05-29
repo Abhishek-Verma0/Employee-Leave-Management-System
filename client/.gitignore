@@ -22,6 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
+.env
 
 Employee_Leave_Management_Assignment_v2.pdf
