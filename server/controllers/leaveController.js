@@ -114,6 +114,7 @@ const updateLeave = asyncHandler(async (req, res) => {
 
     await leave.save();
 
+
     return res.status(200).json({
         success: true,
         message: `Leave ${status} successfully`,

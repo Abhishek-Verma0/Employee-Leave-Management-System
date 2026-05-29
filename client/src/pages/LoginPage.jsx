@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 
-
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
