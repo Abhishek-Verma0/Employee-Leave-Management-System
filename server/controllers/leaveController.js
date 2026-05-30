@@ -1,4 +1,5 @@
-const Leave = require("../models/Leave")
+const Leave = require("../models/Leave");
+const User = require("../models/User");
 
 const applyLeave = async (req, res, next)=> {
     try {
@@ -91,7 +92,7 @@ const updateLeave = async(req, res, next) => {
 
 const getLeaveBalance = async (req, res, next) => {
     try {
-        const user = await require("../models/User").findById(req.user.id);
+        const user = await User.findById(req.user.id);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
