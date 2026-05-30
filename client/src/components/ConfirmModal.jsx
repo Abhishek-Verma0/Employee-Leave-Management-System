@@ -1,6 +1,6 @@
 import { FiAlertTriangle } from "react-icons/fi";
 
-const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel }) => {
+const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmText = "Delete", }) => {
   if (!isOpen) return null;
 
   return (
@@ -39,7 +39,7 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel }) => {
             onClick={onConfirm}
             className="flex-1 rounded-xl bg-red-500 hover:bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors"
           >
-            Delete
+            {confirmText}
           </button>
         </div>
       </div>
