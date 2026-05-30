@@ -8,7 +8,7 @@ const { applyReimbursement, getReimbursement, getAllReimbursement, updateReimbur
 const { authMiddleware, checkRole } = require("../middleware/authMiddleware")
 
 const validate = require("../middleware/validate")
-const { reimbursementSchema } = require("../validators/reimbursement.validator")
+const { reimbursementSchema, updateReimbursementStatusSchema } = require("../validators/reimbursement.validator")
 
 router.post("/applyReimbursement", authMiddleware, checkRole(["employee", "manager"]), upload.single("bill"),
     validate(reimbursementSchema), applyReimbursement)
@@ -17,7 +17,7 @@ router.get("/getReimbursement", authMiddleware, checkRole(['employee', 'manager'
 
 router.get("/getAll", authMiddleware, checkRole(["admin", "manager"]), getAllReimbursement)
 
-router.put("/update/:id", authMiddleware, checkRole(["admin", "manager"]), updateReimbursement)
+router.put("/update/:id", authMiddleware, checkRole(["admin", "manager"]),validate(updateReimbursementStatusSchema), updateReimbursement)
 
 router.put("/updateBill/:id", authMiddleware, checkRole(["employee", "manager"]), upload.single("bill"), updateBill)
 
