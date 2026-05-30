@@ -1,6 +1,6 @@
 const Leave = require("../models/Leave")
 
-const applyLeave = async (req, res)=> {
+const applyLeave = async (req, res, next)=> {
     try {
         const { fromDate, toDate, reason } = req.body
 
@@ -27,39 +27,37 @@ const applyLeave = async (req, res)=> {
         })
     }
     catch (err) {
-      return  res.status(500).json({
-            message:err.message
-        })
+        next(err);
     }
 }
 
 //  getting all leaves from db  for  the particular user
 
-const getLeaves = async (req, res) => {
+const getLeaves = async (req, res, next) => {
     try {
         const leaves =await Leave.find({ user: req.user.id }).sort({ createdAt: -1 })
       return  res.status(200).json(leaves)
 
     } catch (err) {
-      return  res.status(404).json({ message: err.message })
+        next(err);
     }
 }
 
 //  getting all user leave for manger role or admin
 
-const getAllLeaves = async (req, res) => {
+const getAllLeaves = async (req, res, next) => {
     try {
         const leaves = await Leave.find({user:{$ne:req.user.id}}).populate("user", "email role").sort({ createdAt: -1 })
         return res.status(200).json(leaves);
     } catch (err) {
-        return res.status(500).json({message:err.message})
+        next(err);
     }
 }
 
 
 //  updaating leave status
 
-const updateLeave = async(req, res) => {
+const updateLeave = async(req, res, next) => {
     try {
         const leaveId = req.params.id
         const { status } = req.body
@@ -84,14 +82,14 @@ const updateLeave = async(req, res) => {
        return res.status(200).json({message:`Leave ${status} successfully`,leave})
         
     } catch (err) {
-       return res.status(500).json({message:err.message})
+        next(err);
     }
 }
 
 
 
 
-const getLeaveBalance = async (req, res) => {
+const getLeaveBalance = async (req, res, next) => {
     try {
         const user = await require("../models/User").findById(req.user.id);
         if (!user) {
@@ -114,7 +112,7 @@ const getLeaveBalance = async (req, res) => {
             remainingLeaveDays: remaining
         });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        next(err);
     }
 };
 

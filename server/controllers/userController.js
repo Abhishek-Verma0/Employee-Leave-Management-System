@@ -4,7 +4,7 @@ const User = require("../models/User")
 //  upadte user role
 
 
-const updateUserRole = async (req, res) => {
+const updateUserRole = async (req, res, next) => {
     try {
         const userId = req.params.id;
         const { role } = req.body; 
@@ -26,26 +26,26 @@ const updateUserRole = async (req, res) => {
         res.status(200).json({ message: `User role updated to ${role}`, user });
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        next(err);
     }
 }
 
 
 //  get all user
 
-const getAllUser = async (req, res) => {
+const getAllUser = async (req, res, next) => {
     try {
         
         const user = await User.find({}).select("-password") // line not send pass to the frontend
         
         return res.status(200).json({user})
     } catch (err) {
-        res.status(404).json({message:err.message})
+        next(err);
     }
 }
 
 //  delete User
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
     try {
         const userId = req.params.id
         const deleteduser = await User.findByIdAndDelete(userId)
@@ -56,7 +56,7 @@ const deleteUser = async (req, res) => {
 
     }
     catch (err) {
-        return res.status(500).json({ message: err.message });
+        next(err);
     }
 }
  module.exports={updateUserRole,getAllUser,deleteUser}
