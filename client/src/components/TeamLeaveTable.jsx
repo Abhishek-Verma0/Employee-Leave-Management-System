@@ -4,7 +4,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ConfirmModal from "./ConfirmModal";
 
-const TeamLeaveTable = ({ leaves, onUpdate }) => {
+const TeamLeaveTable = ({ leaves, onUpdate , currentUserRole }) => {
     const [statusFilter, setStatusFilter] = useState("all");
     const [modal, setModal] = useState({
   open: false,
@@ -81,6 +81,7 @@ const csvContent =
 
     doc.save("leave-records.pdf");
   };
+  
   return (
     <>
   <div className="mb-4 flex flex-wrap gap-3">
@@ -144,72 +145,86 @@ const csvContent =
               )}
             </tr>
           </thead>
-          <tbody>
-            {filteredLeaves.map((l) => (
-              <tr
-                key={l._id}
-                style={{ borderBottom: "1px solid var(--border-color)" }}
+         <tbody>
+  {filteredLeaves.map((l) => (
+    <tr
+      key={l._id}
+      style={{ borderBottom: "1px solid var(--border-color)" }}
+    >
+      <td
+        className="whitespace-nowrap px-4 py-3"
+        style={{ color: "var(--text-primary)" }}
+      >
+        {l.user?.email}
+      </td>
+
+      <td
+        className="whitespace-nowrap px-4 py-3"
+        style={{ color: "var(--text-primary)" }}
+      >
+        {new Date(l.fromDate).toLocaleDateString()}
+      </td>
+
+      <td
+        className="whitespace-nowrap px-4 py-3"
+        style={{ color: "var(--text-primary)" }}
+      >
+        {new Date(l.toDate).toLocaleDateString()}
+      </td>
+
+      <td
+        className="max-w-[150px] truncate px-4 py-3"
+        style={{ color: "var(--text-primary)" }}
+      >
+        {l.reason}
+      </td>
+
+      <td className="px-4 py-3">
+        <StatusBadge status={l.status} />
+      </td>
+
+      <td className="px-4 py-3">
+        {l.status === "pending" &&
+          (
+            (currentUserRole === "manager" &&
+              l.user?.role === "employee") ||
+
+            (currentUserRole === "admin" &&
+              l.user?.role === "manager")
+          ) && (
+            <div className="flex gap-1.5">
+              <button
+                onClick={() =>
+                  setModal({
+                    open: true,
+                    leaveId: l._id,
+                    action: "approved",
+                  })
+                }
+                className="cursor-pointer rounded-md bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-green-200"
               >
-                <td
-                  className="whitespace-nowrap px-4 py-3"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {l.user?.email}
-                </td>
-                <td
-                  className="whitespace-nowrap px-4 py-3"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {new Date(l.fromDate).toLocaleDateString()}
-                </td>
-                <td
-                  className="whitespace-nowrap px-4 py-3"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {new Date(l.toDate).toLocaleDateString()}
-                </td>
-                <td
-                  className="max-w-[150px] truncate px-4 py-3"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {l.reason}
-                </td>
-                <td className="px-4 py-3">
-                  <StatusBadge status={l.status} />
-                </td>
-                <td className="px-4 py-3">
-                  {l.status === "pending" && (
-                    <div className="flex gap-1.5">
-                      <button
-                        onClick={() =>
-                            setModal({
-                           open: true,
-                           leaveId: l._id,
-                           action: "approved",
-                          })
-                          }
-                        className="cursor-pointer rounded-md bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-green-200"
-                      >
-                        Approve
-                      </button>
-                      <button
-                             onClick={() =>
-                             setModal({
-                             open: true,
-                             leaveId: l._id,
-                             action: "rejected",
-                            })
-                           }      
-                        className="cursor-pointer rounded-md bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-200"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
+                Approve
+              </button>
+
+              <button
+                onClick={() =>
+                  setModal({
+                    open: true,
+                    leaveId: l._id,
+                    action: "rejected",
+                  })
+                }
+                className="cursor-pointer rounded-md bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-200"
+              >
+                Reject
+              </button>
+            </div>
+          )}
+      </td>
+    </tr>
+  ))}
+</tbody>
+        
         </table>
       )}
     </div>
