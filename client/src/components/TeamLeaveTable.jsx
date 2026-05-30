@@ -31,10 +31,10 @@ const TeamLeaveTable = ({ leaves, onUpdate }) => {
       l.reason,
       l.status,
     ]);
-const value = String(cell ?? "");
+
   
     const escapeCSVCell = (cell) => {
-  
+  const value = String(cell ?? "");
   const safeValue = /^[=+\-@]/.test(value)
     ? `'${value}`
     : value;
