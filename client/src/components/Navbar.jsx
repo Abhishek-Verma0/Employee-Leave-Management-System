@@ -74,7 +74,7 @@ const Navbar = () => {
             }}
             title="Toggle theme"
           >
-            {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
+            {dark ? <FiMoon size={16} /> : <FiSun size={16} />}
           </button>
 
           {user ? (
@@ -148,7 +148,7 @@ const Navbar = () => {
                 backgroundColor: "var(--bg-secondary)",
               }}
             >
-              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
+              {dark ? <FiMoon size={16} /> : <FiSun size={16} />}
             </button>
 
             {user ? (
