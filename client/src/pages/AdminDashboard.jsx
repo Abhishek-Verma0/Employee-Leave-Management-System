@@ -114,7 +114,7 @@ const AdminDashboard = () => {
       case "users":
         return <UserTable users={users} onUpdateRole={handleUpdateRole} onDeleteUser={handleDeleteUser} />;
       case "leaves":
-        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} />;
+        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} currentUserRole={user?.role} />;
       case "reimbursements":
         return <TeamReimbursementTable reimbursements={allReimb} onUpdate={handleUpdateReimb} />;
       default:
