@@ -1,14 +1,23 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import toast from "react-hot-toast";
 import { FiSun, FiMoon, FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import { useState } from "react";
 
+const navItems = [
+  { name: "Home", to: "/#home" },
+  { name: "Features", to: "/#features" },
+  { name: "Policies", to: "/#policies" },
+  { name: "About", to: "/#about" },
+  { name: "Contact", to: "/#contact" },
+];
+
 const Navbar = () => {
   const { user, logout } = useAuth();
   const { dark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hovered, setHovered] = useState(null);
 
@@ -21,6 +30,21 @@ const Navbar = () => {
   const getDashboardPath = () => {
     if (!user) return "/";
     return `/${user.role}`;
+  };
+
+  const handleNav = (to) => {
+    const hash = to.includes("#") ? to.split("#")[1] : null;
+    if (hash && location.pathname === "/") {
+      const element = document.getElementById(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+        setMenuOpen(false);
+        return;
+      }
+    }
+
+    navigate(to);
+    setMenuOpen(false);
   };
 
   return (
@@ -42,7 +66,21 @@ const Navbar = () => {
             <span style={{ color: "#6366f1" }}>Swiftly</span>
           </Link>
 
-          <div className="hidden items-center gap-3 sm:flex">
+          <div className="hidden items-center gap-6 sm:flex">
+            <div className="flex items-center gap-4">
+              {navItems.map((item) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  onClick={() => handleNav(item.to)}
+                  className="text-sm font-medium transition-colors hover:text-indigo-500"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+
             {user && (
               <span
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase"
@@ -65,7 +103,7 @@ const Navbar = () => {
               title="Toggle theme"
             >
               {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
-              <span>Theme</span>
+              <span>{dark ? "Light" : "Dark"}</span>
             </button>
 
             {user ? (
@@ -83,7 +121,7 @@ const Navbar = () => {
                   to="/login"
                   onMouseEnter={() => setHovered("login")}
                   onMouseLeave={() => setHovered(null)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold border border-indigo-500 transition-all duration-300 ${
+                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold border border-indigo-500 transition-all duration-300 ${
                     hovered === "login"
                       ? "bg-indigo-500 text-white"
                       : "bg-transparent text-indigo-500"
@@ -96,7 +134,7 @@ const Navbar = () => {
                   to="/register"
                   onMouseEnter={() => setHovered("register")}
                   onMouseLeave={() => setHovered(null)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold border border-indigo-500 transition-all duration-300 ${
+                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold border border-indigo-500 transition-all duration-300 ${
                     hovered === "register"
                       ? "bg-indigo-500 text-white"
                       : "bg-transparent text-indigo-500"
@@ -150,6 +188,18 @@ const Navbar = () => {
             </div>
 
             <div className="mt-6 flex flex-col gap-4">
+              {navItems.map((item) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  onClick={() => handleNav(item.to)}
+                  className="rounded-2xl px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-indigo-50 hover:text-indigo-600"
+                  style={{ color: "var(--text-primary)" }}
+                >
+                  {item.name}
+                </button>
+              ))}
+
               {user && (
                 <span
                   className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium uppercase"
@@ -172,7 +222,7 @@ const Navbar = () => {
                 title="Toggle theme"
               >
                 {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
-                <span>Theme</span>
+                <span>{dark ? "Light" : "Dark"}</span>
               </button>
 
               {user ? (
