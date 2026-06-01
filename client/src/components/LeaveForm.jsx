@@ -11,6 +11,10 @@ const LeaveForm = ({ onSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+      if (toDate < fromDate) {
+    alert("'To Date' cannot be earlier than 'From Date'.");
+    return;
+  }
     await onSubmit({ fromDate, toDate, reason });
     setShow(false);
     setFromDate("");

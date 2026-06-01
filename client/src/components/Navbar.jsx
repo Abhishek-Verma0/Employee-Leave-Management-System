@@ -104,6 +104,7 @@ const Navbar = () => {
             >
               {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
               <span>{dark ? "Light" : "Dark"}</span>
+              <span>{dark ? "Dark Mode" : "Light Mode"}</span>
             </button>
 
             {user ? (

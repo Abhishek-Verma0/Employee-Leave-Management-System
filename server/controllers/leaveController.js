@@ -49,7 +49,7 @@ const getLeaves = async (req, res) => {
 
 const getAllLeaves = async (req, res) => {
     try {
-        const leaves = await Leave.find({user:{$ne:req.user.id}}).populate("user", "email").sort({ createdAt: -1 })
+        const leaves = await Leave.find({user:{$ne:req.user.id}}).populate("user", "email role").sort({ createdAt: -1 })
         return res.status(200).json(leaves);
     } catch (err) {
         return res.status(500).json({message:err.message})
