@@ -40,7 +40,7 @@ const Navbar = () => {
             style={{ color: "var(--text-primary)" }}
           >
             {dark ? <FiMoon size={16} /> : <FiSun size={16} />}
-          </button>
+          </Link>
 
           <div className="hidden items-center gap-3 sm:flex">
             {user && (
