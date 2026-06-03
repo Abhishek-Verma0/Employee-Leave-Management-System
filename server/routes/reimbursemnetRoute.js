@@ -18,8 +18,7 @@ const upload = multer({
 
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
-        } else {
-         } else {
+        }  else {
             const error = new Error("Only PNG, JPG, JPEG, and PDF files are allowed");
             error.statusCode = 400;
             cb(error);
