@@ -39,8 +39,8 @@ const Navbar = () => {
             className="text-lg font-bold tracking-tight sm:text-xl"
             style={{ color: "var(--text-primary)" }}
           >
-            <span style={{ color: "#6366f1" }}>Swiftly</span>
-          </Link>
+            {dark ? <FiMoon size={16} /> : <FiSun size={16} />}
+          </button>
 
           <div className="hidden items-center gap-3 sm:flex">
             {user && (
@@ -64,8 +64,7 @@ const Navbar = () => {
               }}
               title="Toggle theme"
             >
-              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
-              <span>{dark ? "Dark Mode" : "Light Mode"}</span>
+              {dark ? <FiMoon size={16} /> : <FiSun size={16} />}
             </button>
 
             {user ? (
