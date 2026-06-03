@@ -30,7 +30,7 @@ const ReimbursementForm = ({ onSubmit }) => {
       <div className="mb-4">
         <button
           onClick={() => setShow(!show)}
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-white transition-allduration-300 hover:bg-indigo-400 hover:shadow-lg hover:scale-105"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-white transition-all duration-300 hover:bg-indigo-400 hover:shadow-lg hover:scale-105"
           style={{ backgroundColor: "#6366f1" }}
         >
           {show ? <FiX size={14} /> : <FiPlus size={14} />}
