@@ -24,7 +24,7 @@ const upload = multer({
             cb(error);
          }
         }
-    }
+    
 });
 
 const { applyReimbursement, getReimbursement, getAllReimbursement, updateReimbursement, updateBill, deleteBill } = require("../controllers/reimbursementController")
