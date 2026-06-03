@@ -36,4 +36,3 @@ const updateLeaveStatusSchema = z.object({
 });
 
 module.exports = { leaveSchema, updateLeaveStatusSchema };
->>>>>>> main
