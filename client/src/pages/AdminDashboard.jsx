@@ -34,9 +34,9 @@ const AdminDashboard = () => {
         api.get("/api/leave/allLeaves"),
         api.get("/api/reimbursement/getAll"),
       ]);
-      setUsers(uRes.data.user || []);
-      setAllLeaves(lRes.data);
-      setAllReimb(rRes.data.reimbursements || []);
+      setUsers(uRes.data.data || uRes.data.user || []);
+      setAllLeaves(lRes.data.data || lRes.data || []);
+      setAllReimb(rRes.data.data || rRes.data.reimbursements || []);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -114,7 +114,7 @@ const AdminDashboard = () => {
       case "users":
         return <UserTable users={users} onUpdateRole={handleUpdateRole} onDeleteUser={handleDeleteUser} />;
       case "leaves":
-        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} />;
+        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} currentUserRole={user?.role} />;
       case "reimbursements":
         return <TeamReimbursementTable reimbursements={allReimb} onUpdate={handleUpdateReimb} />;
       default:
