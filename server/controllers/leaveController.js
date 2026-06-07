@@ -150,6 +150,43 @@ const getLeaveBalance = asyncHandler(async (req, res) => {
         const diffDays =
             Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
 
+
+        const approvedLeaves = await Leave.find({ user: req.user.id, status: "approved" });
+        const pendingLeaves = await Leave.find({
+    user: req.user.id,
+    status: "pending"
+});
+
+let pendingDays = 0;
+
+for (const leave of pendingLeaves) {
+    const from = new Date(leave.fromDate);
+    const to = new Date(leave.toDate);
+
+    const diffDays =
+        Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
+
+    pendingDays += diffDays;
+}
+        let usedDays = 0;
+        for (const leave of approvedLeaves) {
+            const from = new Date(leave.fromDate);
+            const to = new Date(leave.toDate);
+            const diffDays = Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
+            usedDays += diffDays;
+        }
+
+        const remaining = Math.max(0, user.totalLeaveDays - usedDays);
+        return res.status(200).json({
+    totalLeaveDays: user.totalLeaveDays,
+    usedLeaveDays: usedDays,
+    pendingLeaveDays: pendingDays,
+    remainingLeaveDays: remaining
+});
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
         usedDays += diffDays;
     }
 
@@ -174,4 +211,5 @@ module.exports = {
     getAllLeaves,
     updateLeave,
     getLeaveBalance
+
 };
