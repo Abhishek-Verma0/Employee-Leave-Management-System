@@ -2,7 +2,7 @@ const { z } = require("zod");
 
 const leaveSchema = z.object({
 
-    leaveType: z.string().min(1, "Leave type is required"),
+    
 
 
     fromDate: z.string().min(1, "From date is required"),
@@ -11,8 +11,8 @@ const leaveSchema = z.object({
 
     reason: z
         .string()
-        .min(5, "Reason must be at least 5 characters")
-        .max(500, "Reason cannot exceed 500 characters"),
+        .min(5, "Reason must be at least 5 words")
+        .max(500, "Reason cannot exceed 500 words"),
 })
 .refine((data) => {
     return new Date(data.toDate) >= new Date(data.fromDate);
