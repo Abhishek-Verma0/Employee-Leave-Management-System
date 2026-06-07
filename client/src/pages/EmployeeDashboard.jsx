@@ -145,7 +145,7 @@ const EmployeeDashboard = () => {
           />
           <SummaryCard
   icon={<FiClock size={18} />}
-  count={leaveBalance.pendingLeaveDays}
+  count={leaveBalance.pendingLeaveDays ?? 0}
   label="Pending Leave Days"
 />
         </div>
