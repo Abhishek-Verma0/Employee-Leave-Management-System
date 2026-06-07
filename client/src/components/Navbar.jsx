@@ -93,19 +93,17 @@ const Navbar = () => {
               </span>
             )}
 
-            <button
-              onClick={toggleTheme}
-              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
-              style={{
-                color: "var(--text-secondary)",
-                backgroundColor: "var(--bg-secondary)",
-              }}
-              title="Toggle theme"
-            >
-              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
-              <span>{dark ? "Light" : "Dark"}</span>
-              <span>{dark ? "Dark Mode" : "Light Mode"}</span>
-            </button>
+<button
+  onClick={toggleTheme}
+  className="inline-flex items-center justify-center rounded-lg p-2 transition-colors"
+  style={{
+    color: "var(--text-secondary)",
+    backgroundColor: "var(--bg-secondary)",
+  }}
+  title="Toggle theme"
+>
+  {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
+</button>
 
             {user ? (
               <button
