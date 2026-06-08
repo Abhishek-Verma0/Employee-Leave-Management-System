@@ -1,4 +1,4 @@
-const { ZodError, success } = require("zod");
+const { ZodError } = require("zod");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
@@ -21,7 +21,7 @@ const errorMiddleware = (err, req, res, next) => {
     if (err instanceof mongoose.Error.CastError) {
         return res.status(400).json({
             success: false,
-            message: "Invalid resource ID",
+            message: "Invalid ID format",
         });
     }
 
