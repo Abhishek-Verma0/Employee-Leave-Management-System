@@ -25,36 +25,36 @@ const App = () => {
     <div className="flex min-h-screen flex-col" style={{ backgroundColor: "var(--bg-primary)" }}>
       <Navbar />
       <main className="flex-1">
-      <Routes>
-        <Route path="/" element={user ? <Navigate to={`/${user.role}`} replace /> : <LandingPage />} />
-        <Route path="/login" element={user ? <Navigate to={`/${user.role}`} replace /> : <LoginPage />} />
-        <Route path="/register" element={user ? <Navigate to={`/${user.role}`} replace /> : <RegisterPage />} />
-        <Route
-          path="/employee"
-          element={
-            <ProtectedRoute allowedRoles={["employee"]}>
-              <EmployeeDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/manager"
-          element={
-            <ProtectedRoute allowedRoles={["manager"]}>
-              <ManagerDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={user ? <Navigate to={`/${user.role}`} replace /> : <LandingPage />} />
+          <Route path="/login" element={user ? <Navigate to={`/${user.role}`} replace /> : <LoginPage />} />
+          <Route path="/register" element={user ? <Navigate to={`/${user.role}`} replace /> : <RegisterPage />} />
+          <Route
+            path="/employee"
+            element={
+              <ProtectedRoute allowedRoles={["employee"]}>
+                <EmployeeDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manager"
+            element={
+              <ProtectedRoute allowedRoles={["manager"]}>
+                <ManagerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
       <Footer />
     </div>
