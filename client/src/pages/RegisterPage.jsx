@@ -11,7 +11,6 @@ import {
   FiEyeOff,
 } from "react-icons/fi";
 
-
 const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
