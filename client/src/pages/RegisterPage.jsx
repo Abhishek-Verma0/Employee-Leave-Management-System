@@ -11,6 +11,14 @@ import {
   FiEyeOff,
 } from "react-icons/fi";
 
+const passwordRequirements = [
+  { label: "At least 8 characters", test: (pw) => pw.length >= 8 },
+  { label: "At least one uppercase letter (A-Z)", test: (pw) => /[A-Z]/.test(pw) },
+  { label: "At least one lowercase letter (a-z)", test: (pw) => /[a-z]/.test(pw) },
+  { label: "At least one number (0-9)", test: (pw) => /[0-9]/.test(pw) },
+  { label: "At least one special character (e.g., @, #, $, !, %, &, *)", test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw) },
+];
+
 const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,6 +45,15 @@ const RegisterPage = () => {
 
     setError("");
     setLoading(true);
+
+    // Password Strength Validation
+    const allMet = passwordRequirements.every((req) => req.test(password));
+    if (!allMet) {
+      setError("Password does not meet all security requirements");
+      toast.error("Password does not meet all security requirements");
+      setLoading(false);
+      return;
+    }
 
     // Password Match Validation
     if (password !== confirmPassword) {
@@ -275,6 +292,31 @@ const RegisterPage = () => {
                 )}
               </button>
             </div>
+
+            {password && (
+              <ul className="mt-2 space-y-1 text-xs">
+                {passwordRequirements.map((req, index) => {
+                  const isMet = req.test(password);
+                  return (
+                    <li
+                      key={index}
+                      className="flex items-center gap-1.5 font-medium"
+                      style={{
+                        color: isMet ? "#10B981" : "#EF4444",
+                      }}
+                    >
+                      <span
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{
+                          backgroundColor: isMet ? "#10B981" : "#EF4444",
+                        }}
+                      />
+                      {req.label}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
 
           {/* Confirm Password */}
