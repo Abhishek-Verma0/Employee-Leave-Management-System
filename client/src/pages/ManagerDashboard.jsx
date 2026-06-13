@@ -158,7 +158,7 @@ const ManagerDashboard = () => {
       case "my-reimbursements":
         return <ReimbursementTable reimbursements={myReimbursements} onUpdateBill={handleUpdateBill} onDeleteBill={handleDeleteBill} />;
       case "team-leaves":
-        return <TeamLeaveTable leaves={teamLeaves} onUpdate={handleUpdateLeave} />;
+        return <TeamLeaveTable leaves={teamLeaves} onUpdate={handleUpdateLeave} currentUserRole={user?.role} />;
       case "team-reimbursements":
         return <TeamReimbursementTable reimbursements={teamReimb} onUpdate={handleUpdateReimb} />;
       default:
