@@ -1,4 +1,5 @@
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 const authMiddleware = async (req, res, next) => {
     try {
@@ -11,9 +12,20 @@ const authMiddleware = async (req, res, next) => {
         const token = header.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+        const user = await User.findById(decoded.id || decoded._id);
+        if (!user) {
+            return res.status(401).json({ message: "User no longer exists" });
+        }
+
         //  attaching to req
-        req.user = decoded
-        next()
+        req.user = {
+            id: user._id,
+            _id: user._id,
+            role: user.role,
+            name: user.name,
+            email: user.email
+        };
+        next();
     }
     catch (err) {
         next(err);
