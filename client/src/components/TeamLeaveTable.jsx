@@ -2,9 +2,15 @@ import { useState } from "react";
 import StatusBadge from "./StatusBadge";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import ConfirmModal from "./ConfirmModal";
 
 const TeamLeaveTable = ({ leaves, onUpdate , currentUserRole }) => {
     const [statusFilter, setStatusFilter] = useState("all");
+    const [modal, setModal] = useState({
+  open: false,
+  leaveId: null,
+  action: "",
+});
     const filteredLeaves =
   statusFilter === "all"
     ? leaves
@@ -26,9 +32,9 @@ const TeamLeaveTable = ({ leaves, onUpdate , currentUserRole }) => {
       l.status,
     ]);
 
+  
     const escapeCSVCell = (cell) => {
   const value = String(cell ?? "");
-
   const safeValue = /^[=+\-@]/.test(value)
     ? `'${value}`
     : value;
@@ -139,7 +145,7 @@ const csvContent =
               )}
             </tr>
           </thead>
-              <tbody>
+         <tbody>
   {filteredLeaves.map((l) => (
     <tr
       key={l._id}
@@ -178,37 +184,78 @@ const csvContent =
       </td>
 
       <td className="px-4 py-3">
-                  {l.status === "pending" &&
- (
-   (currentUserRole === "manager" &&
-    l.user?.role === "employee") ||
+        {l.status === "pending" &&
+          (
+            (currentUserRole === "manager" &&
+              l.user?.role === "employee") ||
 
-   (currentUserRole === "admin" &&
-    l.user?.role === "manager")
- ) && (
-          <div className="flex gap-1.5">
-            <button
-              onClick={() => onUpdate(l._id, "approved")}
-              className="cursor-pointer rounded-md bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-green-200"
-            >
-              Approve
-            </button>
+            (currentUserRole === "admin" &&
+              l.user?.role === "manager")
+          ) && (
+            <div className="flex gap-1.5">
+              <button
+                onClick={() =>
+                  setModal({
+                    open: true,
+                    leaveId: l._id,
+                    action: "approved",
+                  })
+                }
+                className="cursor-pointer rounded-md bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-green-200"
+              >
+                Approve
+              </button>
 
-            <button
-              onClick={() => onUpdate(l._id, "rejected")}
-              className="cursor-pointer rounded-md bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-200"
-            >
-              Reject
-            </button>
-          </div>
-        )}
+              <button
+                onClick={() =>
+                  setModal({
+                    open: true,
+                    leaveId: l._id,
+                    action: "rejected",
+                  })
+                }
+                className="cursor-pointer rounded-md bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-200"
+              >
+                Reject
+              </button>
+            </div>
+          )}
       </td>
     </tr>
   ))}
 </tbody>
+        
         </table>
       )}
     </div>
+         <ConfirmModal
+  isOpen={modal.open}
+  title="Confirm Action"
+  message={`Are you sure you want to ${
+    modal.action === "approved" ? "approve" : "reject"
+  } this leave request?`}
+  confirmText={
+    modal.action === "approved"
+      ? "Approve"
+      : "Reject"
+  }
+  onConfirm={() => {
+    onUpdate(modal.leaveId, modal.action);
+
+    setModal({
+      open: false,
+      leaveId: null,
+      action: "",
+    });
+  }}
+  onCancel={() =>
+    setModal({
+      open: false,
+      leaveId: null,
+      action: "",
+    })
+  }
+/>
     </>
   );
 };
