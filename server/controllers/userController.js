@@ -1,71 +1,86 @@
-const User = require("../models/User")
-const Leave = require("../models/Leave")
-const Reimbursement = require("../models/Reimbursement")
+const User = require("../models/User");
+const mongoose = require("mongoose");
+const asyncHandler = require("express-async-handler");
 
+// Safe user mapper to prevent sensitive field leakage
+const toSafeUser = (user) => ({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role
+});
 
 //  upadte user role
-
-
-const updateUserRole = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const { role } = req.body; 
-
-       
-        if (!["employee", "manager"].includes(role)) {
-            return res.status(400).json({ message: "Invalid role specified" });
-        }
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // Apply the promotion or demotion!
-        user.role = role;
-        await user.save();
-
-        res.status(200).json({ message: `User role updated to ${role}`, user });
-
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+const updateUserRole = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid ID format"
+        });
     }
-}
+    const { role } = req.body; 
 
+    if (!["employee", "manager"].includes(role)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid role specified"
+        });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        });
+    }
+
+    // Apply the promotion or demotion!
+    user.role = role;
+    await user.save();
+
+    const safeUser = toSafeUser(user);
+    res.status(200).json({
+        success: true,
+        message: `User role updated to ${role}`,
+        data: safeUser,
+        user: safeUser
+    });
+});
 
 //  get all user
-
-const getAllUser = async (req, res) => {
-    try {
-        
-        const user = await User.find({}).select("-password") // line not send pass to the frontend
-        
-        return res.status(200).json({user})
-    } catch (err) {
-        res.status(404).json({message:err.message})
-    }
-}
+const getAllUser = asyncHandler(async (req, res) => {
+    const users = await User.find({});
+    const safeUsers = users.map(toSafeUser);
+    
+    return res.status(200).json({
+        success: true,
+        data: safeUsers,
+        user: safeUsers
+    });
+});
 
 //  delete User
-const deleteUser = async (req, res) => {
-    try {
-        const userId = req.params.id
-        const deleteduser = await User.findByIdAndDelete(userId)
-        if (!deleteduser) {
-            return res.status(404).json({message:"user not found"})
-        }
-
-        // Cascade delete orphaned records
-        await Promise.all([
-            Leave.deleteMany({ user: userId }),
-            Reimbursement.deleteMany({ user: userId })
-        ]);
-
-        return res.status(200).json({message:"User deleted successfully"})
-
+const deleteUser = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid ID format"
+        });
     }
-    catch (err) {
-        return res.status(500).json({ message: err.message });
+    const deleteduser = await User.findByIdAndDelete(userId);
+    if (!deleteduser) {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        });
     }
-}
- module.exports={updateUserRole,getAllUser,deleteUser}
+    return res.status(200).json({
+        success: true,
+        message: "User deleted successfully"
+    });
+});
+
+module.exports = { updateUserRole, getAllUser, deleteUser };
