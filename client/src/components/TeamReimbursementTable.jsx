@@ -1,8 +1,16 @@
+import { useState } from "react";
 import StatusBadge from "./StatusBadge";
+import ConfirmModal from "./ConfirmModal";
 import { FiEye, FiDownload } from "react-icons/fi";
 
 const TeamReimbursementTable = ({ reimbursements, onUpdate }) => {
+  const [modal, setModal] = useState({
+  open: false,
+  reimbursementId: null,
+  action: "",
+});
   return (
+    <>
     <div
       className="overflow-x-auto rounded-xl border"
       style={{
@@ -102,13 +110,25 @@ const TeamReimbursementTable = ({ reimbursements, onUpdate }) => {
                   {r.status === "pending" && (
                     <div className="flex gap-1.5">
                       <button
-                        onClick={() => onUpdate(r._id, "approved")}
+                         onClick={() =>
+                         setModal({
+                         open: true,
+                         reimbursementId: r._id,
+                         action: "approved",
+                        })
+                       }
                         className="cursor-pointer rounded-md bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-green-200"
                       >
                         Approve
                       </button>
                       <button
-                        onClick={() => onUpdate(r._id, "rejected")}
+                         onClick={() =>
+                         setModal({
+                         open: true,
+                         reimbursementId: r._id,
+                         action: "rejected",
+                        })
+                        }
                         className="cursor-pointer rounded-md bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-200"
                       >
                         Reject
@@ -122,6 +142,41 @@ const TeamReimbursementTable = ({ reimbursements, onUpdate }) => {
         </table>
       )}
     </div>
+    
+    <ConfirmModal
+      isOpen={modal.open}
+      title="Confirm Action"
+      message={`Are you sure you want to ${
+        modal.action === "approved"
+          ? "approve"
+          : "reject"
+      } this reimbursement request?`}
+      confirmText={
+        modal.action === "approved"
+          ? "Approve"
+          : "Reject"
+      }
+      onConfirm={() => {
+        onUpdate(
+          modal.reimbursementId,
+          modal.action
+        );
+
+        setModal({
+          open: false,
+          reimbursementId: null,
+          action: "",
+        });
+      }}
+      onCancel={() =>
+        setModal({
+          open: false,
+          reimbursementId: null,
+          action: "",
+        })
+      }
+    />
+    </>
   );
 };
 

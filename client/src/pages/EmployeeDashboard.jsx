@@ -36,9 +36,15 @@ const EmployeeDashboard = () => {
       if (lRes.status !== "fulfilled" || rRes.status !== "fulfilled") {
         throw new Error("Failed to load core dashboard data");
       }
-      setLeaves(lRes.value.data);
-      setReimbursements(rRes.value.data);
-      setLeaveBalance(bRes.status === "fulfilled" ? bRes.value.data : null);
+
+      setLeaves(lRes.value.data?.data || lRes.value.data || []);
+      setReimbursements(rRes.value.data?.data || rRes.value.data || []);
+
+      setLeaveBalance(
+        bRes.status === "fulfilled"
+          ? (bRes.value.data?.data || bRes.value.data || null)
+          : null
+      );
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -137,6 +143,11 @@ const EmployeeDashboard = () => {
             count={leaveBalance.usedLeaveDays}
             label="Used Leave Days"
           />
+          <SummaryCard
+  icon={<FiClock size={18} />}
+  count={leaveBalance.pendingLeaveDays ?? 0}
+  label="Pending Leave Days"
+/>
         </div>
       )}
 

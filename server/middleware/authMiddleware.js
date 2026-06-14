@@ -6,7 +6,10 @@ const authMiddleware = async (req, res, next) => {
         //  get token from req header
         const header = req.headers.authorization
         if (!header || !header.startsWith("Bearer ")) {
-            return res.status(401).json({ message: "No token , auth denied" })
+            return res.status(401).json({
+                success: false,
+                message: "No token, auth denied"
+            });
         }
         //  extracting token 
         const token = header.split(" ")[1];
