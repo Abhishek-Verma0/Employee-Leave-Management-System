@@ -31,8 +31,8 @@ const ManagerDashboard = () => {
   const [teamLeaves, setTeamLeaves] = useState([]);
   const [teamReimb, setTeamReimb] = useState([]);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (!isInitial) setLoading(true);
     try {
       const [ml, mr, tl, tr] = await Promise.all([
         api.get("/api/leave/getLeaves"),
@@ -52,7 +52,7 @@ const ManagerDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   const handleApplyLeave = async (data) => {

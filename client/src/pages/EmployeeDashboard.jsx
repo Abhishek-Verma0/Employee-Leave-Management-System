@@ -25,8 +25,8 @@ const EmployeeDashboard = () => {
   const [activeTab, setActiveTab] = useState("leaves");
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (!isInitial) setLoading(true);
     try {
       const [lRes, rRes, bRes] = await Promise.allSettled([
         api.get("/api/leave/getLeaves"),
@@ -53,7 +53,7 @@ const EmployeeDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   const handleApplyLeave = async (data) => {
