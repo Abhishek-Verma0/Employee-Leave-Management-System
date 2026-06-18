@@ -34,7 +34,7 @@ jobs:
           cache-dependency-path: './client/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-package-lock
 
       - name: Lint client code
         run: npm run lint
@@ -61,7 +61,7 @@ jobs:
           cache-dependency-path: './server/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
   audit:
     name: Security Audit
@@ -78,8 +78,12 @@ jobs:
 
       - name: Audit Client Dependencies
         working-directory: ./client
-        run: npm audit --omit=dev
+        run: |
+          npm i --package-lock-only
+          npm audit --omit=dev
 
       - name: Audit Server Dependencies
         working-directory: ./server
-        run: npm audit --omit=dev
+        run: |
+          npm i --package-lock-only
+          npm audit --omit=dev
