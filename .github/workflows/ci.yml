@@ -61,7 +61,7 @@ jobs:
           cache-dependency-path: './server/package-lock.json'
 
       - name: Install dependencies
-        run: npm install --no-package-lock
+        run: npm install
 
   audit:
     name: Security Audit
