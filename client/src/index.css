@@ -43,3 +43,23 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Navbar link hover underline effect */
+.nav-link-hover {
+  position: relative;
+}
+
+.nav-link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #6366f1;
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-link-hover:hover::after {
+  width: 100%;
+}
