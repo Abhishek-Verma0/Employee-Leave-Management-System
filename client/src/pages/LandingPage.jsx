@@ -166,7 +166,7 @@ const LandingPage = () => {
             className="mb-4 text-3xl font-bold tracking-tight sm:text-5xl"
             style={{ color: "var(--text-primary)" }}
           >
-            <span style={{ color: "#6366f1" }}>Swiftly</span> — Leave & Reimbursement Portal
+            <span className="text-indigo-500">Swiftly</span> — Leave & Reimbursement Portal
           </h1>
           <p
             className="mx-auto mb-8 max-w-xl text-base sm:text-lg"
@@ -175,21 +175,23 @@ const LandingPage = () => {
             A modern employee management system that streamlines leave requests,
             approvals, and reimbursement workflows for teams of every size.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             {user ? (
               <Link
                 to={`/${user.role}`}
-                className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors"
-                style={{ backgroundColor: "#6366f1" }}
+                className="group inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-md"
               >
                 Go to Dashboard
-                <FiArrowRight size={16} />
+                <FiArrowRight
+                  size={16}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
               </Link>
             ) : (
               <>
                 <Link
                   to="/register"
-                  className="group inline-flex items-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-500 hover:text-white hover:shadow-md hover:scale-[1.02]"
+                  className="group inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-md"
                 >
                   Get Started
                   <FiArrowRight
@@ -199,7 +201,7 @@ const LandingPage = () => {
                 </Link>
                 <Link
                   to="/login"
-                  className="group inline-flex items-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-500 hover:text-white hover:shadow-sm hover:scale-[1.01]"
+                  className="group inline-flex items-center gap-2 rounded-xl border border-indigo-500 bg-transparent px-6 py-3 text-sm font-semibold text-indigo-500 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-indigo-500 hover:text-white hover:shadow-md"
                 >
                   Sign In
                 </Link>
@@ -226,16 +228,10 @@ const LandingPage = () => {
                 className="group rounded-3xl border border-transparent bg-[var(--bg-card)] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
                 style={{ borderColor: "var(--border-color)" }}
               >
-                <div
-                  className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-3xl"
-                  style={{
-                    color: "#6366f1",
-                    backgroundColor: "rgba(99,102,241,0.12)",
-                  }}
-                >
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10">
                   {metric.icon}
                 </div>
-                <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
+                <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-indigo-500">
                   {metric.title}
                 </p>
                 <p className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
@@ -260,29 +256,19 @@ const LandingPage = () => {
             {features.map((f, i) => (
               <div
                 key={i}
-                className="rounded-xl border p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]"
-                style={{
-                  backgroundColor: "var(--bg-card)",
-                  borderColor: "var(--border-color)",
-                  boxShadow: "0 0 0 rgba(0,0,0,0)",
-                }}
+                className="group rounded-3xl border border-transparent bg-[var(--bg-card)] p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
+                style={{ borderColor: "var(--border-color)" }}
               >
-                <div
-                  className="mb-3 inline-flex rounded-lg p-2"
-                  style={{
-                    color: "#6366f1",
-                    backgroundColor: "var(--bg-secondary)",
-                  }}
-                >
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10">
                   {f.icon}
                 </div>
                 <h3
-                  className="mb-1 text-sm font-semibold"
+                  className="mb-2 text-lg font-semibold"
                   style={{ color: "var(--text-primary)" }}
                 >
                   {f.title}
                 </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                   {f.desc}
                 </p>
               </div>
@@ -292,7 +278,7 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works */}
-      <section className="px-4 pb-16 bg-[var(--bg-secondary)]">
+      <section className="px-4 pb-16 bg-[var(--bg-secondary)] py-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.24em] text-indigo-500">How it works</p>
@@ -305,9 +291,9 @@ const LandingPage = () => {
             {howItWorks.map((step) => (
               <div
                 key={step.step}
-                className="rounded-3xl border border-indigo-100 bg-[var(--bg-card)] p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                className="rounded-3xl border border-transparent bg-[var(--bg-card)] p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
               >
-                <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-indigo-500 text-white text-lg font-bold">
+                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500 text-lg font-bold text-white shadow-sm">
                   {step.step}
                 </div>
                 <h3 className="mb-3 text-xl font-semibold" style={{ color: "var(--text-primary)" }}>
@@ -323,7 +309,7 @@ const LandingPage = () => {
       </section>
 
       {/* Quick Actions */}
-      <section className="px-4 pb-16">
+      <section className="px-4 pb-16 pt-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.24em] text-indigo-500">Quick actions</p>
@@ -339,13 +325,7 @@ const LandingPage = () => {
                 className="group rounded-3xl border border-transparent bg-[var(--bg-card)] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
                 style={{ borderColor: "var(--border-color)" }}
               >
-                <div
-                  className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-3xl"
-                  style={{
-                    color: "#6366f1",
-                    backgroundColor: "rgba(99,102,241,0.12)",
-                  }}
-                >
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10">
                   {action.icon}
                 </div>
                 <h3 className="mb-2 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
@@ -361,7 +341,7 @@ const LandingPage = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="px-4 pb-16 bg-[var(--bg-secondary)]">
+      <section className="px-4 pb-16 bg-[var(--bg-secondary)] py-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center">
             <p className="text-sm uppercase tracking-[0.24em] text-indigo-500">Testimonials</p>
@@ -374,9 +354,9 @@ const LandingPage = () => {
             {testimonials.map((item, index) => (
               <div
                 key={index}
-                className="rounded-3xl border border-indigo-100 bg-[var(--bg-card)] p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                className="rounded-3xl border border-transparent bg-[var(--bg-card)] p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
               >
-                <FiStar size={20} className="mb-4 text-indigo-500" />
+                <FiStar size={20} className="mb-4 text-indigo-500 fill-indigo-500" />
                 <p className="mb-6 text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                   “{item.quote}”
                 </p>
@@ -392,36 +372,38 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Policies */}
+      {/* Policies & About (Merged Styling) */}
       <section id="policies" className="px-4 pb-16 bg-[var(--bg-secondary)]">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-indigo-100 bg-blue/80 p-8 shadow-xl backdrop-blur-sm sm:p-12">
-          <div className="mb-10 text-center ">
-            <p className="text-sm uppercase tracking-[0.24em] text-indigo-500">Policies</p>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl" style={{ color: "var(--text-primary)" }}>
-              Transparent company policies, easy to follow
-            </h2>
-          </div>
+        <div className="mx-auto max-w-6xl space-y-16">
+          <div className="rounded-[2rem] border border-indigo-100 bg-indigo-50/50 p-8 shadow-sm dark:bg-indigo-900/10 dark:border-indigo-900/50 sm:p-12">
+            <div className="mb-10 text-center">
+              <p className="text-sm uppercase tracking-[0.24em] text-indigo-500">Policies</p>
+              <h2 className="mt-3 text-3xl font-bold sm:text-4xl" style={{ color: "var(--text-primary)" }}>
+                Transparent company policies, easy to follow
+              </h2>
+            </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {policies.map((policy) => (
-              <div
-                key={policy.title}
-                className="rounded-3xl border border-indigo-100 bg-[var(--bg-card)] p-6 transition hover:-translate-y-1 hover:shadow-lg"
-              >
-                <h3 className="mb-3 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
-                  {policy.title}
-                </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                  {policy.desc}
-                </p>
-              </div>
-            ))}
+            <div className="grid gap-4 md:grid-cols-3">
+              {policies.map((policy) => (
+                <div
+                  key={policy.title}
+                  className="rounded-3xl border border-transparent bg-[var(--bg-card)] p-6 transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg"
+                >
+                  <h3 className="mb-3 text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
+                    {policy.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                    {policy.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* About */}
-      <section id="about" className="px-4 pb-16">
+      <section id="about" className="px-4 pb-16 pt-8">
         <div className="mx-auto max-w-5xl">
           <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div>
@@ -435,9 +417,11 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <div className="rounded-3xl border border-indigo-100 bg-[var(--bg-card)] p-8 shadow-sm">
+            <div className="rounded-3xl border border-transparent bg-[var(--bg-card)] p-8 shadow-sm transition duration-300 hover:border-indigo-200 hover:shadow-lg">
               <div className="flex items-start gap-4">
-                <FiBriefcase size={28} className="text-indigo-500" />
+                <div className="inline-flex rounded-2xl bg-indigo-50 p-3 text-indigo-500 dark:bg-indigo-500/10">
+                  <FiBriefcase size={24} />
+                </div>
                 <div>
                   <h3 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
                     Reliable for fast-moving teams
@@ -453,8 +437,8 @@ const LandingPage = () => {
       </section>
 
       {/* Contact */}
-      <section id="contact" className="px-4 pb-16 bg-[var(--bg-secondary)]">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-indigo-100 bg-blue/80 p-8 shadow-xl backdrop-blur-sm sm:p-12">
+      <section id="contact" className="px-4 pb-24 bg-[var(--bg-secondary)] py-16">
+        <div className="mx-auto max-w-6xl rounded-[2rem] border border-indigo-100 bg-indigo-50/50 p-8 shadow-sm dark:bg-indigo-900/10 dark:border-indigo-900/50 sm:p-12">
           <div className="grid gap-8 md:grid-cols-2">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-indigo-500">Contact</p>
@@ -467,22 +451,28 @@ const LandingPage = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-start gap-4 rounded-3xl border border-indigo-100 bg-[var(--bg-card)] p-5">
-                <FiMail size={24} className="text-indigo-500" />
+              <div className="flex items-center gap-5 rounded-3xl border border-transparent bg-[var(--bg-card)] p-5 transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-md">
+                <div className="inline-flex rounded-2xl bg-indigo-50 p-3 text-indigo-500 dark:bg-indigo-500/10">
+                  <FiMail size={22} />
+                </div>
                 <div>
                   <p className="font-semibold" style={{ color: "var(--text-primary)" }}>Email</p>
                   <p className="text-sm" style={{ color: "var(--text-secondary)" }}>support@swiftlyapp.com</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4 rounded-3xl border border-indigo-100 bg-[var(--bg-card)] p-5">
-                <FiPhone size={24} className="text-indigo-500" />
+              <div className="flex items-center gap-5 rounded-3xl border border-transparent bg-[var(--bg-card)] p-5 transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-md">
+                <div className="inline-flex rounded-2xl bg-indigo-50 p-3 text-indigo-500 dark:bg-indigo-500/10">
+                  <FiPhone size={22} />
+                </div>
                 <div>
                   <p className="font-semibold" style={{ color: "var(--text-primary)" }}>Phone</p>
                   <p className="text-sm" style={{ color: "var(--text-secondary)" }}>+1 (555) 123-4567</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4 rounded-3xl border border-indigo-100 bg-[var(--bg-card)] p-5">
-                <FiMessageCircle size={24} className="text-indigo-500" />
+              <div className="flex items-center gap-5 rounded-3xl border border-transparent bg-[var(--bg-card)] p-5 transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-md">
+                <div className="inline-flex rounded-2xl bg-indigo-50 p-3 text-indigo-500 dark:bg-indigo-500/10">
+                  <FiMessageCircle size={22} />
+                </div>
                 <div>
                   <p className="font-semibold" style={{ color: "var(--text-primary)" }}>Message</p>
                   <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Start a conversation anytime.</p>
