@@ -177,6 +177,7 @@ const updateBill = asyncHandler(async (req, res) => {
     });
   }
 
+  // Prevent modifying the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
   if (reimbursement.status !== "pending") {
     return res.status(400).json({
       success: false,
@@ -234,6 +235,7 @@ const deleteBill = asyncHandler(async (req, res) => {
     });
   }
 
+  // Prevent deleting the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
   if (reimbursement.status !== "pending") {
     return res.status(400).json({
       success: false,
