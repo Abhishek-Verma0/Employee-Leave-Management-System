@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 
 // Safe user mapper to prevent sensitive field leakage
 const toSafeUser = (user) => ({
-    id: user._id,
+    id: user.id,
     name: user.name,
     email: user.email,
     role: user.role
