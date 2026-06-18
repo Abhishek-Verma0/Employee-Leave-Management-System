@@ -25,7 +25,7 @@ const TeamLeaveTable = ({ leaves, onUpdate , currentUserRole }) => {
     ];
 
     const rows = filteredLeaves.map((l) => [
-      l.user?.email || "N/A",
+      l.user?.email || "Deleted User",
       new Date(l.fromDate).toLocaleDateString(),
       new Date(l.toDate).toLocaleDateString(),
       l.reason,
@@ -71,7 +71,7 @@ const csvContent =
       startY: 22,
       head: [["Employee", "From", "To", "Reason", "Status"]],
       body: filteredLeaves.map((l) => [
-        l.user?.email || "N/A",
+        l.user?.email || "Deleted User",
         new Date(l.fromDate).toLocaleDateString(),
         new Date(l.toDate).toLocaleDateString(),
         l.reason,
@@ -155,7 +155,7 @@ const csvContent =
         className="whitespace-nowrap px-4 py-3"
         style={{ color: "var(--text-primary)" }}
       >
-        {l.user?.email}
+        {l.user?.email || "Deleted User"}
       </td>
 
       <td
