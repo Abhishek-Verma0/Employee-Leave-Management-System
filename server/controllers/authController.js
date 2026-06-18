@@ -60,10 +60,17 @@ const registerUser = asyncHandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     //  create user
+    //  Auto-promote the first registered user to admin to solve the
+    //  bootstrapping problem — without an existing admin, no one can
+    //  approve new accounts via the dashboard.
+    const userCount = await User.countDocuments();
+    const assignedRole = userCount === 0 ? "admin" : "Approval-Pending";
+
     const user = await User.create({
         name: name.trim(),
         email,
         password: hashedPassword,
+        role: assignedRole,
     });
 
     // gen JWT token

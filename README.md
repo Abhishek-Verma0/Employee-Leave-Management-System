@@ -63,6 +63,18 @@ Start the server:
 npm start
 ```
 
+> **Note:** The very first user to register is automatically promoted to
+> **admin** so you can start approving other users immediately. If you
+> already have users in the database and need to create an admin, run the
+> seed script instead:
+>
+> ```bash
+> node scripts/seedAdmin.js
+> ```
+>
+> You can customise the seed credentials with environment variables:
+> `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
+
 ### 3. Setup the client
 
 ```bash
