@@ -11,6 +11,7 @@ import LeaveForm from "../components/LeaveForm";
 import ReimbursementForm from "../components/ReimbursementForm";
 import LeaveTable from "../components/LeaveTable";
 import ReimbursementTable from "../components/ReimbursementTable";
+import LeaveCalendar from "../components/LeaveCalendar";
 
 const tabs = [
   { key: "leaves", label: "Leaves" },
@@ -25,8 +26,8 @@ const EmployeeDashboard = () => {
   const [activeTab, setActiveTab] = useState("leaves");
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (!isInitial) setLoading(true);
     try {
       const [lRes, rRes, bRes] = await Promise.allSettled([
         api.get("/api/leave/getLeaves"),
@@ -36,9 +37,15 @@ const EmployeeDashboard = () => {
       if (lRes.status !== "fulfilled" || rRes.status !== "fulfilled") {
         throw new Error("Failed to load core dashboard data");
       }
-      setLeaves(lRes.value.data);
-      setReimbursements(rRes.value.data);
-      setLeaveBalance(bRes.status === "fulfilled" ? bRes.value.data : null);
+
+      setLeaves(lRes.value.data?.data || lRes.value.data || []);
+      setReimbursements(rRes.value.data?.data || rRes.value.data || []);
+
+      setLeaveBalance(
+        bRes.status === "fulfilled"
+          ? (bRes.value.data?.data || bRes.value.data || null)
+          : null
+      );
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -47,7 +54,7 @@ const EmployeeDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   const handleApplyLeave = async (data) => {
@@ -137,6 +144,11 @@ const EmployeeDashboard = () => {
             count={leaveBalance.usedLeaveDays}
             label="Used Leave Days"
           />
+          <SummaryCard
+  icon={<FiClock size={18} />}
+  count={leaveBalance.pendingLeaveDays ?? 0}
+  label="Pending Leave Days"
+/>
         </div>
       )}
 
@@ -164,7 +176,10 @@ const EmployeeDashboard = () => {
           Loading...
         </p>
       ) : activeTab === "leaves" ? (
-        <LeaveTable leaves={leaves} />
+          <>
+     <LeaveCalendar leaves={leaves} />
+     <LeaveTable leaves={leaves} />
+</>
       ) : (
         <ReimbursementTable reimbursements={reimbursements} onUpdateBill={handleUpdateBill} onDeleteBill={handleDeleteBill} />
       )}
