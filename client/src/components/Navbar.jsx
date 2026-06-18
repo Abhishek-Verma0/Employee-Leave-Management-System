@@ -117,7 +117,7 @@ const Navbar = () => {
               <div className="flex items-center gap-3">
                 <Link
                   to="/login"
-                  className="flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 hover:bg-indigo-50"
+                  className="flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 hover:bg-[var(--bg-secondary)]"
                 >
                   Login
                 </Link>
@@ -179,7 +179,7 @@ const Navbar = () => {
                   key={item.name}
                   type="button"
                   onClick={() => handleNav(item.to)}
-                  className="rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-indigo-50 hover:text-indigo-600"
+                  className="rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-[var(--bg-secondary)] hover:text-indigo-500"
                   style={{ color: "var(--text-primary)" }}
                 >
                   {item.name}
@@ -228,7 +228,7 @@ const Navbar = () => {
                   <Link
                     to="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="inline-flex items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 hover:bg-indigo-50"
+                    className="inline-flex items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 hover:bg-[var(--bg-secondary)]"
                   >
                     Login
                   </Link>

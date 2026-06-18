@@ -60,6 +60,13 @@ body {
   transition: width 0.3s ease-in-out;
 }
 
-.nav-link-hover:hover::after {
+.nav-link-hover:hover::after,
+.nav-link-hover:focus-visible::after {
   width: 100%;
+}
+
+/* Ensure focus outline is visible for keyboard users */
+.nav-link-hover:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
 }

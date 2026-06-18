@@ -198,7 +198,7 @@ const LandingPage = () => {
                 </Link>
                 <Link
                   to="/login"
-                  className="group inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-50 hover:shadow-sm"
+                  className="group inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-[var(--bg-secondary)] hover:shadow-sm"
                 >
                   Sign In
                 </Link>
