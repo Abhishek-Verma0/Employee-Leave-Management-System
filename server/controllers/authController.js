@@ -38,6 +38,34 @@ const registerUser = asyncHandler(async (req, res) => {
         });
     }
 
+const registerUser = async (req, res, next) => {
+    try {
+        const { name, email, password } = req.body;
+
+        //  user exist or not
+        const userExist = await User.findOne({ email });
+
+        if (userExist) {
+            return res.status(400).json({
+                success: false,
+                message: "user already exist"
+            });
+        }
+
+        //  hashing pass
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Determine role: first user becomes admin, others become Approval-Pending
+        const isFirstUser = (await User.countDocuments({})) === 0;
+        const role = isFirstUser ? "admin" : "Approval-Pending";
+
+        //  create user
+        const user = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+            role,
     if (typeof password !== "string" || password.trim().length < 6) {
         return res.status(400).json({
             success: false,
@@ -45,6 +73,20 @@ const registerUser = asyncHandler(async (req, res) => {
         });
     }
 
+        const message = isFirstUser 
+            ? "Admin account created successfully." 
+            : "Registration successful! Please wait for an admin to verify and approve your account.";
+
+        //  response send
+        res.status(201).json({
+            success: true,
+            message,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            },
     //  user exist or not
     const userExist = await User.findOne({ email });
 
