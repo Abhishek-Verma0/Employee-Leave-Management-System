@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken")
 const User = require("../models/User");
 
 const authMiddleware = async (req, res, next) => {
@@ -15,20 +15,18 @@ const authMiddleware = async (req, res, next) => {
         const token = header.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await User.findById(decoded.id || decoded._id);
+        // Fetch fresh user from DB to ensure they still exist and have the current role
+        const user = await User.findById(decoded.id).select("-password");
         if (!user) {
-            return res.status(401).json({ message: "User no longer exists" });
+            return res.status(401).json({ message: "User no longer exists, authorization denied" });
         }
 
-        //  attaching to req
+        // Attach fresh user details to req
         req.user = {
             id: user._id,
-            _id: user._id,
             role: user.role,
-            name: user.name,
-            email: user.email
         };
-        next();
+        next()
     }
     catch (err) {
         next(err);

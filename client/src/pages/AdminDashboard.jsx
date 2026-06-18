@@ -26,8 +26,8 @@ const AdminDashboard = () => {
   const [allLeaves, setAllLeaves] = useState([]);
   const [allReimb, setAllReimb] = useState([]);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (!isInitial) setLoading(true);
     try {
       const [uRes, lRes, rRes] = await Promise.all([
         api.get("/api/user/getUsers"),
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   const handleDeleteUser = async (id) => {
