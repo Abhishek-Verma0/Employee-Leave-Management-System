@@ -80,6 +80,9 @@ const updateReimbursement = async (req, res, next) => {
     if (!reimbursement) {
       return res.status(404).json({ message: "Reimbursement not found" });
     }
+    if (!reimbursement.user) {
+      return res.status(400).json({ message: "The user associated with this reimbursement request has been deleted" });
+    }
     const applicantRole = reimbursement.user.role;
     const approverRole = req.user.role;
 

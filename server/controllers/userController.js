@@ -1,4 +1,6 @@
 const User = require("../models/User")
+const Leave = require("../models/Leave")
+const Reimbursement = require("../models/Reimbursement")
 
 
 //  upadte user role
@@ -52,6 +54,11 @@ const deleteUser = async (req, res) => {
         if (!deleteduser) {
             return res.status(404).json({message:"user not found"})
         }
+
+        // Cascade delete associated leaves and reimbursements
+        await Leave.deleteMany({ user: userId });
+        await Reimbursement.deleteMany({ user: userId });
+
         return res.status(200).json({message:"User deleted successfully"})
 
     }

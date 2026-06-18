@@ -69,6 +69,10 @@ const updateLeave = async(req, res) => {
             return res.status(404).json({message:"Leave not found "})
         }
 
+        if (!leave.user) {
+            return res.status(400).json({ message: "The user associated with this leave request has been deleted" })
+        }
+
         const applicantRole = leave.user.role
         const approverRole = req.user.role
         if (approverRole === "manager" && applicantRole !== "employee")
