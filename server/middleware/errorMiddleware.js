@@ -5,6 +5,14 @@ const jwt = require("jsonwebtoken");
 const errorMiddleware = (err, req, res, next) => {
     console.error(err);
 
+    // File upload errors
+    if (err.name === "MulterError" || err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({
+            success: false,
+            message: err.message || "File upload error",
+        });
+    }
+
     // Validation errors using Zod
     if (err instanceof ZodError) {
         return res.status(400).json({

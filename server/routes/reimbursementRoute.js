@@ -2,30 +2,28 @@ const express = require("express")
 const router = express.Router()
 const multer = require("multer")
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }) // 5MB limit
+const fileFilter = (req, file, cb) => {
+    const allowedMimeTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "application/pdf"
+    ];
+
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        const err = new Error("Only images (jpeg, png, gif, webp) and PDF files are allowed!");
+        err.statusCode = 400;
+        cb(err, false);
+    }
+};
+
 const upload = multer({
     storage: multer.memoryStorage(),
-
-    limits: { fileSize: 5 * 1024 * 1024 },
-
-    fileFilter: (req, file, cb) => {
-
-        const allowedTypes = [
-            "image/png",
-            "image/jpeg",
-            "image/jpg",
-            "application/pdf"
-        ];
-
-        if (allowedTypes.includes(file.mimetype)) {
-            cb(null, true);
-        }  else {
-            const error = new Error("Only PNG, JPG, JPEG, and PDF files are allowed");
-            error.statusCode = 400;
-            cb(error);
-         }
-        }
-    
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: fileFilter
 });
 
 const { applyReimbursement, getReimbursement, getAllReimbursement, updateReimbursement, updateBill, deleteBill } = require("../controllers/reimbursementController")
@@ -47,5 +45,4 @@ router.put("/updateBill/:id", authMiddleware, checkRole(["employee", "manager"])
 
 router.delete("/deleteBill/:id", authMiddleware, checkRole(["employee", "manager"]), deleteBill)
 
-module.exports = router
 module.exports = router
