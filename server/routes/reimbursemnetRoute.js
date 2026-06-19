@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const upload = require("../config/multer"); // ✅ centralized multer
-const fileValidation = require("../middleware/fileValidation"); // ✅ new middleware
+const upload = require("../config/multer"); 
+const fileValidation = require("../middleware/fileValidation");
 
 const {
   applyReimbursement,
@@ -21,7 +21,7 @@ const {
   updateReimbursementStatusSchema,
 } = require("../validators/reimbursement.validator");
 
-// ✅ Apply reimbursement
+
 router.post(
   "/applyReimbursement",
   authMiddleware,
@@ -32,7 +32,7 @@ router.post(
   applyReimbursement
 );
 
-// ✅ Get own reimbursements
+
 router.get(
   "/getReimbursement",
   authMiddleware,
@@ -40,7 +40,7 @@ router.get(
   getReimbursement
 );
 
-// ✅ Get all reimbursements
+
 router.get(
   "/getAll",
   authMiddleware,
@@ -48,7 +48,7 @@ router.get(
   getAllReimbursement
 );
 
-// ✅ Update status
+
 router.put(
   "/update/:id",
   authMiddleware,
@@ -57,7 +57,7 @@ router.put(
   updateReimbursement
 );
 
-// ✅ Update bill
+
 router.put(
   "/updateBill/:id",
   authMiddleware,
@@ -67,7 +67,6 @@ router.put(
   updateBill
 );
 
-// ✅ Delete bill
 router.delete(
   "/deleteBill/:id",
   authMiddleware,
