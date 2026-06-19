@@ -1,26 +1,78 @@
-const express = require("express")
-const router = express.Router()
-const multer = require("multer")
+const express = require("express");
+const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }) // 5MB limit
+const upload = require("../config/multer"); // ✅ centralized multer
+const fileValidation = require("../middleware/fileValidation"); // ✅ new middleware
 
-const { applyReimbursement, getReimbursement, getAllReimbursement, updateReimbursement, updateBill, deleteBill } = require("../controllers/reimbursementController")
-const { authMiddleware, checkRole } = require("../middleware/authMiddleware")
+const {
+  applyReimbursement,
+  getReimbursement,
+  getAllReimbursement,
+  updateReimbursement,
+  updateBill,
+  deleteBill,
+} = require("../controllers/reimbursementController");
 
-const validate = require("../middleware/validate")
-const { reimbursementSchema, updateReimbursementStatusSchema } = require("../validators/reimbursement.validator")
+const { authMiddleware, checkRole } = require("../middleware/authMiddleware");
 
-router.post("/applyReimbursement", authMiddleware, checkRole(["employee", "manager"]), upload.single("bill"),
-    validate(reimbursementSchema), applyReimbursement)
+const validate = require("../middleware/validate");
+const {
+  reimbursementSchema,
+  updateReimbursementStatusSchema,
+} = require("../validators/reimbursement.validator");
 
-router.get("/getReimbursement", authMiddleware, checkRole(['employee', 'manager']), getReimbursement)
+// ✅ Apply reimbursement
+router.post(
+  "/applyReimbursement",
+  authMiddleware,
+  checkRole(["employee", "manager"]),
+  upload.single("bill"),
+  fileValidation,
+  validate(reimbursementSchema),
+  applyReimbursement
+);
 
-router.get("/getAll", authMiddleware, checkRole(["admin", "manager"]), getAllReimbursement)
+// ✅ Get own reimbursements
+router.get(
+  "/getReimbursement",
+  authMiddleware,
+  checkRole(["employee", "manager"]),
+  getReimbursement
+);
 
-router.put("/update/:id", authMiddleware, checkRole(["admin", "manager"]),validate(updateReimbursementStatusSchema), updateReimbursement)
+// ✅ Get all reimbursements
+router.get(
+  "/getAll",
+  authMiddleware,
+  checkRole(["admin", "manager"]),
+  getAllReimbursement
+);
 
-router.put("/updateBill/:id", authMiddleware, checkRole(["employee", "manager"]), upload.single("bill"), updateBill)
+// ✅ Update status
+router.put(
+  "/update/:id",
+  authMiddleware,
+  checkRole(["admin", "manager"]),
+  validate(updateReimbursementStatusSchema),
+  updateReimbursement
+);
 
-router.delete("/deleteBill/:id", authMiddleware, checkRole(["employee", "manager"]), deleteBill)
+// ✅ Update bill
+router.put(
+  "/updateBill/:id",
+  authMiddleware,
+  checkRole(["employee", "manager"]),
+  upload.single("bill"),
+  fileValidation,
+  updateBill
+);
 
-module.exports = router
+// ✅ Delete bill
+router.delete(
+  "/deleteBill/:id",
+  authMiddleware,
+  checkRole(["employee", "manager"]),
+  deleteBill
+);
+
+module.exports = router;

@@ -55,4 +55,22 @@ const errorMiddleware = (err, req, res, next) => {
     });
 };
 
+
+
+// multer file size error
+if (err.code === "LIMIT_FILE_SIZE") {
+  return res.status(400).json({
+    success: false,
+    message: "File size exceeds 2MB limit",
+  });
+}
+
+// invalid file type
+if (err.message.includes("Only PNG")) {
+  return res.status(400).json({
+    success: false,
+    message: err.message,
+  });
+}
+
 module.exports = errorMiddleware
