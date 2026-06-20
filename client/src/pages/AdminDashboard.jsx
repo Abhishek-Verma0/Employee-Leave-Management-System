@@ -26,17 +26,17 @@ const AdminDashboard = () => {
   const [allLeaves, setAllLeaves] = useState([]);
   const [allReimb, setAllReimb] = useState([]);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (!isInitial) setLoading(true);
     try {
       const [uRes, lRes, rRes] = await Promise.all([
         api.get("/api/user/getUsers"),
         api.get("/api/leave/allLeaves"),
         api.get("/api/reimbursement/getAll"),
       ]);
-      setUsers(uRes.data.user || []);
-      setAllLeaves(lRes.data);
-      setAllReimb(rRes.data.reimbursements || []);
+      setUsers(uRes.data.data || uRes.data.user || []);
+      setAllLeaves(lRes.data.data || lRes.data || []);
+      setAllReimb(rRes.data.data || rRes.data.reimbursements || []);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   const handleDeleteUser = async (id) => {
