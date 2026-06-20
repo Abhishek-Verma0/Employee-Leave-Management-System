@@ -33,7 +33,7 @@ A full-stack web application for managing employee leaves and reimbursement clai
 - MongoDB Atlas connection string
 - ImageKit account (for bill uploads)
 
-### 1. Clone the repo
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Abhishek-Verma0/Employee-Leave-Management-System.git
