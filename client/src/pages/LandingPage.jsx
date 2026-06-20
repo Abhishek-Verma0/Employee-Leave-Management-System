@@ -39,7 +39,7 @@ const features = [
   },
 ];
 
-const LandingPage = () => {
+const LandingPage = () =>{
   const { user } = useAuth();
 
   return (
