@@ -69,7 +69,7 @@ const Footer = () => {
               <span>your@email.com</span>
             </div>
             <a
-              href="https://github.com/your-username"
+              href="https://github.com/Abhishek-Verma0/Employee-Leave-Management-System"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-2 hover:text-indigo-500"
