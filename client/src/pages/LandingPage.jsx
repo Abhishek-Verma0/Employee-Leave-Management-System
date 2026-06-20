@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/Footer"; 
+
 import {
   FiCalendar,
   FiShield,
@@ -42,7 +44,7 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-[calc(100vh-57px)]">
-      {/* Hero */}
+     
       <section className="px-4 py-16 text-center sm:py-24">
         <div className="mx-auto max-w-3xl">
           <h1
@@ -93,7 +95,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Features */}
+ 
       <section className="px-4 pb-16">
         <div className="mx-auto max-w-5xl">
           <h2
@@ -128,7 +130,10 @@ const LandingPage = () => {
                 >
                   {f.title}
                 </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {f.desc}
                 </p>
               </div>
@@ -136,6 +141,9 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
+     
+      <Footer />
     </div>
   );
 };
