@@ -2,7 +2,6 @@ const express = require("express")
 const router = express.Router()
 const multer = require("multer")
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }) // 5MB limit
 const upload = multer({
     storage: multer.memoryStorage(),
 
@@ -47,5 +46,4 @@ router.put("/updateBill/:id", authMiddleware, checkRole(["employee", "manager"])
 
 router.delete("/deleteBill/:id", authMiddleware, checkRole(["employee", "manager"]), deleteBill)
 
-module.exports = router
 module.exports = router
