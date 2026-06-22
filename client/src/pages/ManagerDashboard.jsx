@@ -13,6 +13,7 @@ import LeaveTable from "../components/LeaveTable";
 import ReimbursementTable from "../components/ReimbursementTable";
 import TeamLeaveTable from "../components/TeamLeaveTable";
 import TeamReimbursementTable from "../components/TeamReimbursementTable";
+import LeaveCalendar from "../components/LeaveCalendar";
 
 const tabs = [
   { key: "my-leaves", label: "My Leaves" },
@@ -141,7 +142,13 @@ const ManagerDashboard = () => {
 
     switch (activeTab) {
       case "my-leaves":
-        return <LeaveTable leaves={myLeaves} />;
+      return (
+       <>
+        <LeaveCalendar leaves={myLeaves} />
+        <LeaveTable leaves={myLeaves} />
+       </>
+       );
+
       case "my-reimbursements":
         return <ReimbursementTable reimbursements={myReimbursements} />;
       case "team-leaves":

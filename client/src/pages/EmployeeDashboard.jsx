@@ -11,6 +11,7 @@ import LeaveForm from "../components/LeaveForm";
 import ReimbursementForm from "../components/ReimbursementForm";
 import LeaveTable from "../components/LeaveTable";
 import ReimbursementTable from "../components/ReimbursementTable";
+import LeaveCalendar from "../components/LeaveCalendar";
 
 const tabs = [
   { key: "leaves", label: "Leaves" },
