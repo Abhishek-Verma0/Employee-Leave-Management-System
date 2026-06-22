@@ -36,24 +36,60 @@ const applyLeave = async (req, res)=> {
 //  getting all leaves from db  for  the particular user
 
 const getLeaves = async (req, res) => {
-    try {
-        const leaves =await Leave.find({ user: req.user.id }).sort({ createdAt: -1 })
-      return  res.status(200).json(leaves)
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
 
-    } catch (err) {
-      return  res.status(404).json({ message: err.message })
-    }
+    const totalItems = await Leave.countDocuments({ user: req.user.id })
+
+    const leaves = await Leave.find({ user: req.user.id })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return res.status(200).json({
+      data: leaves,
+      currentPage: page,
+      totalPages,
+      totalItems
+    })
+  } catch (err) {
+    return res.status(500).json({ message: err.message })
+  }
 }
 
 //  getting all user leave for manger role or admin
 
 const getAllLeaves = async (req, res) => {
-    try {
-        const leaves = await Leave.find({user:{$ne:req.user.id}}).populate("user", "email role").sort({ createdAt: -1 })
-        return res.status(200).json(leaves);
-    } catch (err) {
-        return res.status(500).json({message:err.message})
-    }
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    const query = { user: { $ne: req.user.id } }
+
+    const totalItems = await Leave.countDocuments(query)
+
+    const leaves = await Leave.find(query)
+      .populate("user", "email role")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return res.status(200).json({
+      data: leaves,
+      currentPage: page,
+      totalPages,
+      totalItems
+    })
+  } catch (err) {
+    return res.status(500).json({ message: err.message })
+  }
 }
 
 

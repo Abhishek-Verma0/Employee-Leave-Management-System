@@ -59,14 +59,29 @@ const applyReimbursement = async (req, res, next) => {
 
 const getReimbursement = async (req, res, next) => {
   try {
-    const reimbursements = await Reimbursement.find({ user: req.user.id }).sort(
-      { createdAt: -1 },
-    );
-    return res.status(200).json(reimbursements);
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    const totalItems = await Reimbursement.countDocuments({ user: req.user.id })
+
+    const reimbursements = await Reimbursement.find({ user: req.user.id })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return res.status(200).json({
+      data: reimbursements,
+      currentPage: page,
+      totalPages,
+      totalItems
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 //  updating reimbursement status
 
@@ -106,12 +121,32 @@ const updateReimbursement = async (req, res, next) => {
 
 const getAllReimbursement = async (req, res, next) => {
   try {
-    const reimbursements = await Reimbursement.find({ user: { $ne: req.user.id } }).populate("user", "email").sort({ createdAt: -1 });
-    return res.status(200).json({ reimbursements });
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    const query = { user: { $ne: req.user.id } }
+
+    const totalItems = await Reimbursement.countDocuments(query)
+
+    const reimbursements = await Reimbursement.find(query)
+      .populate("user", "email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return res.status(200).json({
+      data: reimbursements,
+      currentPage: page,
+      totalPages,
+      totalItems
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 //  update bill on an existing reimbursement
 

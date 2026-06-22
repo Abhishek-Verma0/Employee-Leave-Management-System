@@ -19,6 +19,7 @@ const tabs = [
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+
   const [activeTab, setActiveTab] = useState("users");
   const [loading, setLoading] = useState(true);
 
@@ -26,17 +27,35 @@ const AdminDashboard = () => {
   const [allLeaves, setAllLeaves] = useState([]);
   const [allReimb, setAllReimb] = useState([]);
 
+  // ✅ Pagination states
+  const [leavePage, setLeavePage] = useState(1);
+  const [leaveTotal, setLeaveTotal] = useState(1);
+
+  const [reimbPage, setReimbPage] = useState(1);
+  const [reimbTotal, setReimbTotal] = useState(1);
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [uRes, lRes, rRes] = await Promise.all([
+      const [uRes, lRes, rRes] = await Promise.allSettled([
         api.get("/api/user/getUsers"),
-        api.get("/api/leave/allLeaves"),
-        api.get("/api/reimbursement/getAll"),
+        api.get(`/api/leave/getAllLeaves?page=${leavePage}&limit=5`),
+        api.get(`/api/reimbursement/getAllReimbursement?page=${reimbPage}&limit=5`),
       ]);
-      setUsers(uRes.data.user || []);
-      setAllLeaves(lRes.data);
-      setAllReimb(rRes.data.reimbursements || []);
+
+      if (uRes.status === "fulfilled") {
+        setUsers(uRes.value.data.user || []);
+      }
+
+      if (lRes.status === "fulfilled") {
+        setAllLeaves(lRes.value.data.data);
+        setLeaveTotal(lRes.value.data.totalPages);
+      }
+
+      if (rRes.status === "fulfilled") {
+        setAllReimb(rRes.value.data.data);
+        setReimbTotal(rRes.value.data.totalPages);
+      }
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -46,7 +65,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [leavePage, reimbPage]);
 
   const handleDeleteUser = async (id) => {
     try {
@@ -102,19 +121,38 @@ const AdminDashboard = () => {
     rejected: countByStatus(allReimb, "rejected"),
   };
 
-  const renderContent = () => {
-    if (loading) {
+  const renderPagination = () => {
+    if (activeTab === "leaves") {
       return (
-        <p className="py-8 text-center text-sm" style={{ color: "var(--text-secondary)" }}>
-          Loading...
-        </p>
+        <div className="flex justify-center gap-4 mt-4">
+          <button disabled={leavePage === 1} onClick={() => setLeavePage(p => p - 1)}>Prev</button>
+          <span>Page {leavePage} / {leaveTotal}</span>
+          <button disabled={leavePage === leaveTotal} onClick={() => setLeavePage(p => p + 1)}>Next</button>
+        </div>
       );
     }
+
+    if (activeTab === "reimbursements") {
+      return (
+        <div className="flex justify-center gap-4 mt-4">
+          <button disabled={reimbPage === 1} onClick={() => setReimbPage(p => p - 1)}>Prev</button>
+          <span>Page {reimbPage} / {reimbTotal}</span>
+          <button disabled={reimbPage === reimbTotal} onClick={() => setReimbPage(p => p + 1)}>Next</button>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const renderContent = () => {
+    if (loading) return <p className="text-center py-6">Loading...</p>;
+
     switch (activeTab) {
       case "users":
         return <UserTable users={users} onUpdateRole={handleUpdateRole} onDeleteUser={handleDeleteUser} />;
       case "leaves":
-        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} currentUserRole={user?.role} />;
+        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} />;
       case "reimbursements":
         return <TeamReimbursementTable reimbursements={allReimb} onUpdate={handleUpdateReimb} />;
       default:
@@ -126,21 +164,21 @@ const AdminDashboard = () => {
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Admin Panel" />
 
-      {/* Overview Summary */}
       <div className="mb-6 grid grid-cols-3 gap-3">
         <SummaryCard icon={<FiUsers size={18} />} count={users.length} label="Total Users" />
         <SummaryCard icon={<FiCalendar size={18} />} count={allLeaves.length} label="Leave Requests" />
         <SummaryCard icon={<FiDollarSign size={18} />} count={allReimb.length} label="Reimbursements" />
       </div>
 
-      {/* Charts side-by-side */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatusChart title="Leave Requests" data={leaveStats} />
         <StatusChart title="Reimbursement Claims" data={reimbStats} />
       </div>
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+
       {renderContent()}
+      {renderPagination()}
     </div>
   );
 };
