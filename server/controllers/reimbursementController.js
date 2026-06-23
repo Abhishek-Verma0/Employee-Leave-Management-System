@@ -134,14 +134,24 @@ const updateReimbursement = asyncHandler(async (req, res) => {
 
 //  get all reimbursement for admin or manager
 const getAllReimbursement = asyncHandler(async (req, res) => {
+  const matchCondition = req.user.role === "admin" 
+      ? {} 
+      : { role: "employee" };
+
   const reimbursements = await Reimbursement.find({ user: { $ne: req.user.id } })
-    .populate("user", "name email role")
+    .populate({
+        path: "user",
+        select: "name email role",
+        match: matchCondition
+    })
     .sort({ createdAt: -1 });
+
+  const filteredReimbursements = reimbursements.filter(r => r.user !== null);
 
   return res.status(200).json({
     success: true,
-    data: reimbursements,
-    reimbursements
+    data: filteredReimbursements,
+    reimbursements: filteredReimbursements
   });
 });
 
