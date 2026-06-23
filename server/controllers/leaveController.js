@@ -50,15 +50,25 @@ const getLeaves = asyncHandler(async (req, res) => {
 
 //  getting all user leave for manager role or admin
 const getAllLeaves = asyncHandler(async (req, res) => {
+    const matchCondition = req.user.role === "admin" 
+        ? {} 
+        : { role: "employee" };
+
     const leaves = await Leave.find({
         user: { $ne: req.user.id }
     })
-        .populate("user", "name email role")
+        .populate({
+            path: "user",
+            select: "name email role",
+            match: matchCondition
+        })
         .sort({ createdAt: -1 });
+
+    const filteredLeaves = leaves.filter(leave => leave.user !== null);
 
     return res.status(200).json({
         success: true,
-        data: leaves
+        data: filteredLeaves
     });
 });
 
