@@ -189,8 +189,7 @@ const csvContent =
             (currentUserRole === "manager" &&
               l.user?.role === "employee") ||
 
-            (currentUserRole === "admin" &&
-              l.user?.role === "manager")
+            (currentUserRole === "admin")
           ) && (
             <div className="flex gap-1.5">
               <button

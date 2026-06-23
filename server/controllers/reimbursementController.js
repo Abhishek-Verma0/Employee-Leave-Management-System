@@ -123,12 +123,7 @@ const updateReimbursement = asyncHandler(async (req, res) => {
       message: "Manger can approve only employee reimbursement"
     });
   }
-  if (approverRole === "admin" && applicantRole !== "manager") {
-    return res.status(403).json({
-      success: false,
-      message: "Admin can approve only manager reimbursement"
-    });
-  }
+
   reimbursement.status = status;
   await reimbursement.save();
 

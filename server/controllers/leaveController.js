@@ -103,13 +103,6 @@ const updateLeave = asyncHandler(async (req, res) => {
         });
     }
 
-    if (approverRole === "admin" && applicantRole !== "manager") {
-        return res.status(403).json({
-            success: false,
-            message: "Admin can only approve manager leaves"
-        });
-    }
-
     leave.status = status;
 
     await leave.save();
