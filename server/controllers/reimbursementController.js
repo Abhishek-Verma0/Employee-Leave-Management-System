@@ -106,6 +106,14 @@ const updateReimbursement = asyncHandler(async (req, res) => {
       message: "Reimbursement not found"
     });
   }
+
+  if (reimbursement.status !== "pending") {
+    return res.status(400).json({
+      success: false,
+      message: "Reimbursement status has already been finalized"
+    });
+  }
+
   const applicantRole = reimbursement.user.role;
   const approverRole = req.user.role;
 
@@ -169,6 +177,14 @@ const updateBill = asyncHandler(async (req, res) => {
     });
   }
 
+  // Prevent modifying the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
+  if (reimbursement.status !== "pending") {
+    return res.status(400).json({
+      success: false,
+      message: "Cannot modify bill for a processed reimbursement"
+    });
+  }
+
   if (!req.file) {
     return res.status(400).json({
       success: false,
@@ -216,6 +232,14 @@ const deleteBill = asyncHandler(async (req, res) => {
     return res.status(403).json({
       success: false,
       message: "Not authorised"
+    });
+  }
+
+  // Prevent deleting the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
+  if (reimbursement.status !== "pending") {
+    return res.status(400).json({
+      success: false,
+      message: "Cannot delete bill for a processed reimbursement"
     });
   }
 
