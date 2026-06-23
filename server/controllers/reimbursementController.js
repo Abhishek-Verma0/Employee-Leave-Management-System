@@ -169,6 +169,14 @@ const updateBill = asyncHandler(async (req, res) => {
     });
   }
 
+  //  only allow updates if the reimbursement is still pending
+  if (reimbursement.status !== "pending") {
+    return res.status(400).json({
+      success: false,
+      message: "Cannot modify the bill of an already processed reimbursement"
+    });
+  }
+
   if (!req.file) {
     return res.status(400).json({
       success: false,
@@ -216,6 +224,14 @@ const deleteBill = asyncHandler(async (req, res) => {
     return res.status(403).json({
       success: false,
       message: "Not authorised"
+    });
+  }
+
+  //  only allow deletion if the reimbursement is still pending
+  if (reimbursement.status !== "pending") {
+    return res.status(400).json({
+      success: false,
+      message: "Cannot delete the bill of an already processed reimbursement"
     });
   }
 
