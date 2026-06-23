@@ -52,7 +52,7 @@ const TeamReimbursementTable = ({ reimbursements, onUpdate }) => {
                   className="whitespace-nowrap px-4 py-3"
                   style={{ color: "var(--text-primary)" }}
                 >
-                  {r.user?.email}
+                  {r.user?.email || "Deleted User"}
                 </td>
                 <td
                   className="whitespace-nowrap px-4 py-3 font-medium"

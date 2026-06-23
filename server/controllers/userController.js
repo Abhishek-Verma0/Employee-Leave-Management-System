@@ -21,12 +21,7 @@ const updateUserRole = asyncHandler(async (req, res) => {
     }
     const { role } = req.body; 
 
-    if (!["employee", "manager"].includes(role)) {
-        return res.status(400).json({
-            success: false,
-            message: "Invalid role specified"
-        });
-    }
+    
 
     const user = await User.findById(userId);
     if (!user) {

@@ -11,6 +11,7 @@ import LeaveForm from "../components/LeaveForm";
 import ReimbursementForm from "../components/ReimbursementForm";
 import LeaveTable from "../components/LeaveTable";
 import ReimbursementTable from "../components/ReimbursementTable";
+import LeaveCalendar from "../components/LeaveCalendar";
 
 const tabs = [
   { key: "leaves", label: "Leaves" },
@@ -25,8 +26,8 @@ const EmployeeDashboard = () => {
   const [activeTab, setActiveTab] = useState("leaves");
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (!isInitial) setLoading(true);
     try {
       const [lRes, rRes, bRes] = await Promise.allSettled([
         api.get("/api/leave/getLeaves"),
@@ -53,7 +54,7 @@ const EmployeeDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   const handleApplyLeave = async (data) => {
@@ -175,7 +176,10 @@ const EmployeeDashboard = () => {
           Loading...
         </p>
       ) : activeTab === "leaves" ? (
-        <LeaveTable leaves={leaves} />
+          <>
+     <LeaveCalendar leaves={leaves} />
+     <LeaveTable leaves={leaves} />
+</>
       ) : (
         <ReimbursementTable reimbursements={reimbursements} onUpdateBill={handleUpdateBill} onDeleteBill={handleDeleteBill} />
       )}

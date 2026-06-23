@@ -106,6 +106,14 @@ const updateReimbursement = asyncHandler(async (req, res) => {
       message: "Reimbursement not found"
     });
   }
+
+  if (reimbursement.status !== "pending") {
+    return res.status(400).json({
+      success: false,
+      message: "Reimbursement status has already been finalized"
+    });
+  }
+
   const applicantRole = reimbursement.user.role;
   const approverRole = req.user.role;
 
@@ -169,11 +177,11 @@ const updateBill = asyncHandler(async (req, res) => {
     });
   }
 
-  //  only allow updates if the reimbursement is still pending
+  // Prevent modifying the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
   if (reimbursement.status !== "pending") {
     return res.status(400).json({
       success: false,
-      message: "Cannot modify the bill of an already processed reimbursement"
+      message: "Cannot modify bill for a processed reimbursement"
     });
   }
 
@@ -227,11 +235,11 @@ const deleteBill = asyncHandler(async (req, res) => {
     });
   }
 
-  //  only allow deletion if the reimbursement is still pending
+  // Prevent deleting the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
   if (reimbursement.status !== "pending") {
     return res.status(400).json({
       success: false,
-      message: "Cannot delete the bill of an already processed reimbursement"
+      message: "Cannot delete bill for a processed reimbursement"
     });
   }
 
