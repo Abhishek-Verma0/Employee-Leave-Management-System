@@ -61,17 +61,26 @@ const registerUser = asyncHandler(async (req, res) => {
 
     //  create user
     //  Auto-promote the first registered user to admin to solve the
-    //  bootstrapping problem — without an existing admin, no one can
-    //  approve new accounts via the dashboard.
-    const userCount = await User.countDocuments();
-    const assignedRole = userCount === 0 ? "admin" : "Approval-Pending";
-
-    const user = await User.create({
+    //  bootstrapping problem securely avoiding race conditions.
+    let user = await User.create({
         name: name.trim(),
         email,
         password: hashedPassword,
-        role: assignedRole,
+        role: "Approval-Pending",
     });
+
+    let isFirstUser = false;
+    const adminExists = await User.findOne({ role: "admin" });
+    
+    if (!adminExists) {
+        // Determine the absolute first user deterministically using _id sorting
+        const firstInsertedUser = await User.findOne().sort({ _id: 1 });
+        if (firstInsertedUser && firstInsertedUser._id.equals(user._id)) {
+            user.role = "admin";
+            await user.save();
+            isFirstUser = true;
+        }
+    }
 
     // gen JWT token
     const token = await jwt.sign(
@@ -83,7 +92,6 @@ const registerUser = asyncHandler(async (req, res) => {
         { expiresIn: "2h" },
     );
 
-    const isFirstUser = userCount === 0;
     const message = isFirstUser 
         ? "Admin account created successfully." 
         : "Registration successful! Please wait for an admin to verify and approve your account.";
