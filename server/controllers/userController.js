@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const Leave = require("../models/Leave");
+const Reimbursement = require("../models/Reimbursement");
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 
@@ -72,6 +74,11 @@ const deleteUser = asyncHandler(async (req, res) => {
             message: "User not found"
         });
     }
+
+    // Cascade delete associated leaves and reimbursements
+    await Leave.deleteMany({ user: userId });
+    await Reimbursement.deleteMany({ user: userId });
+
     return res.status(200).json({
         success: true,
         message: "User deleted successfully"
