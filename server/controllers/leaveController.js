@@ -81,9 +81,17 @@ const getLeaves = asyncHandler(async (req, res) => {
 
 //  getting all user leave for manager role or admin
 const getAllLeaves = asyncHandler(async (req, res) => {
-    const leaves = await Leave.find({
-        user: { $ne: req.user.id }
-    })
+    let targetUserIds = [];
+    
+    if (req.user.role === "manager") {
+        const employees = await User.find({ role: "employee" }).select("_id");
+        targetUserIds = employees.map(e => e._id);
+    } else if (req.user.role === "admin") {
+        const nonAdmins = await User.find({ role: { $ne: "admin" } }).select("_id");
+        targetUserIds = nonAdmins.map(u => u._id);
+    }
+
+    const leaves = await Leave.find({ user: { $in: targetUserIds } })
         .populate("user", "name email role")
         .sort({ createdAt: -1 });
 
