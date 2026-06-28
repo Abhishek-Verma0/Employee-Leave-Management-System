@@ -1,4 +1,5 @@
 const Reimbursement = require("../models/Reimbursement");
+const User = require("../models/User");
 const imagekit = require("../config/imagekit");
 const { toFile } = require("@imagekit/nodejs");
 const mongoose = require("mongoose");
@@ -142,7 +143,17 @@ const updateReimbursement = asyncHandler(async (req, res) => {
 
 //  get all reimbursement for admin or manager
 const getAllReimbursement = asyncHandler(async (req, res) => {
-  const reimbursements = await Reimbursement.find({ user: { $ne: req.user.id } })
+  let targetUserIds = [];
+  
+  if (req.user.role === "manager") {
+      const employees = await User.find({ role: "employee" }).select("_id");
+      targetUserIds = employees.map(e => e._id);
+  } else if (req.user.role === "admin") {
+      const nonAdmins = await User.find({ role: { $ne: "admin" } }).select("_id");
+      targetUserIds = nonAdmins.map(u => u._id);
+  }
+
+  const reimbursements = await Reimbursement.find({ user: { $in: targetUserIds } })
     .populate("user", "name email role")
     .sort({ createdAt: -1 });
 
