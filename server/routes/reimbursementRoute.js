@@ -48,4 +48,3 @@ router.put("/updateBill/:id", authMiddleware, checkRole(["employee", "manager"])
 router.delete("/deleteBill/:id", authMiddleware, checkRole(["employee", "manager"]), deleteBill)
 
 module.exports = router
-module.exports = router
