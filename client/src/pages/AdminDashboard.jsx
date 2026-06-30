@@ -2,7 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiUsers, FiCalendar, FiDollarSign } from "react-icons/fi";
+import {
+  FiUsers,
+  FiCalendar,
+  FiDollarSign
+} from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
 import StatusChart from "../components/StatusChart";
@@ -27,13 +31,14 @@ const AdminDashboard = () => {
   const [allLeaves, setAllLeaves] = useState([]);
   const [allReimb, setAllReimb] = useState([]);
 
+
   const [leavePage, setLeavePage] = useState(1);
   const [leaveTotal, setLeaveTotal] = useState(1);
 
   const [reimbPage, setReimbPage] = useState(1);
   const [reimbTotal, setReimbTotal] = useState(1);
 
-  // ✅ FIXED
+ 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -67,7 +72,8 @@ const AdminDashboard = () => {
     fetchData();
   }, [fetchData]);
 
-  const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
+  const countByStatus = (arr, s) =>
+    arr.filter((x) => x.status === s).length;
 
   const leaveStats = {
     pending: countByStatus(allLeaves, "pending"),
@@ -79,6 +85,45 @@ const AdminDashboard = () => {
     pending: countByStatus(allReimb, "pending"),
     approved: countByStatus(allReimb, "approved"),
     rejected: countByStatus(allReimb, "rejected"),
+  };
+
+  const renderPagination = () => {
+    if (activeTab === "leaves") {
+      return (
+        <div className="flex justify-center gap-4 mt-4">
+          <button disabled={leavePage === 1} onClick={() => setLeavePage(p => p - 1)}>Prev</button>
+          <span>Page {leavePage} / {leaveTotal}</span>
+          <button disabled={leavePage === leaveTotal} onClick={() => setLeavePage(p => p + 1)}>Next</button>
+        </div>
+      );
+    }
+
+    if (activeTab === "reimbursements") {
+      return (
+        <div className="flex justify-center gap-4 mt-4">
+          <button disabled={reimbPage === 1} onClick={() => setReimbPage(p => p - 1)}>Prev</button>
+          <span>Page {reimbPage} / {reimbTotal}</span>
+          <button disabled={reimbPage === reimbTotal} onClick={() => setReimbPage(p => p + 1)}>Next</button>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const renderContent = () => {
+    if (loading) return <p className="text-center py-6">Loading...</p>;
+
+    switch (activeTab) {
+      case "users":
+        return <UserTable users={users} />;
+      case "leaves":
+        return <TeamLeaveTable leaves={allLeaves} />;
+      case "reimbursements":
+        return <TeamReimbursementTable reimbursements={allReimb} />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -98,15 +143,8 @@ const AdminDashboard = () => {
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {loading ? (
-        <p className="text-center py-6">Loading...</p>
-      ) : activeTab === "users" ? (
-        <UserTable users={users} />
-      ) : activeTab === "leaves" ? (
-        <TeamLeaveTable leaves={allLeaves} />
-      ) : (
-        <TeamReimbursementTable reimbursements={allReimb} />
-      )}
+      {renderContent()}
+      {renderPagination()}
     </div>
   );
 };
