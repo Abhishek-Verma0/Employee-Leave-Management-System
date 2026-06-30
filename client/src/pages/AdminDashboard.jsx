@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiUsers, FiCalendar, FiDollarSign, FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import {
+  FiUsers,
+  FiCalendar,
+  FiDollarSign
+} from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
 import StatusChart from "../components/StatusChart";
@@ -27,14 +31,15 @@ const AdminDashboard = () => {
   const [allLeaves, setAllLeaves] = useState([]);
   const [allReimb, setAllReimb] = useState([]);
 
-  // ✅ Pagination states
+
   const [leavePage, setLeavePage] = useState(1);
   const [leaveTotal, setLeaveTotal] = useState(1);
 
   const [reimbPage, setReimbPage] = useState(1);
   const [reimbTotal, setReimbTotal] = useState(1);
 
-  const fetchData = async () => {
+ 
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [uRes, lRes, rRes] = await Promise.allSettled([
@@ -61,53 +66,14 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [leavePage, reimbPage]);
 
   useEffect(() => {
     fetchData();
-  }, [leavePage, reimbPage]);
+  }, [fetchData]);
 
-  const handleDeleteUser = async (id) => {
-    try {
-      await api.delete(`/api/user/deleteUser/${id}`);
-      toast.success("User deleted successfully");
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to delete user");
-    }
-  };
-
-  const handleUpdateRole = async (id, role) => {
-    try {
-      await api.put(`/api/user/updateRole/${id}`, { role });
-      toast.success(`User role updated to ${role}`);
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update role");
-    }
-  };
-
-  const handleUpdateLeave = async (id, status) => {
-    try {
-      await api.put(`/api/leave/updateLeave/${id}`, { status });
-      toast.success(`Leave ${status} successfully`);
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update");
-    }
-  };
-
-  const handleUpdateReimb = async (id, status) => {
-    try {
-      await api.put(`/api/reimbursement/update/${id}`, { status });
-      toast.success(`Reimbursement ${status} successfully`);
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update");
-    }
-  };
-
-  const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
+  const countByStatus = (arr, s) =>
+    arr.filter((x) => x.status === s).length;
 
   const leaveStats = {
     pending: countByStatus(allLeaves, "pending"),
@@ -150,11 +116,11 @@ const AdminDashboard = () => {
 
     switch (activeTab) {
       case "users":
-        return <UserTable users={users} onUpdateRole={handleUpdateRole} onDeleteUser={handleDeleteUser} />;
+        return <UserTable users={users} />;
       case "leaves":
-        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} />;
+        return <TeamLeaveTable leaves={allLeaves} />;
       case "reimbursements":
-        return <TeamReimbursementTable reimbursements={allReimb} onUpdate={handleUpdateReimb} />;
+        return <TeamReimbursementTable reimbursements={allReimb} />;
       default:
         return null;
     }
