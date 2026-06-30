@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiUsers, FiCalendar, FiDollarSign, FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { FiUsers, FiCalendar, FiDollarSign } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
 import StatusChart from "../components/StatusChart";
@@ -27,14 +27,14 @@ const AdminDashboard = () => {
   const [allLeaves, setAllLeaves] = useState([]);
   const [allReimb, setAllReimb] = useState([]);
 
-  // ✅ Pagination states
   const [leavePage, setLeavePage] = useState(1);
   const [leaveTotal, setLeaveTotal] = useState(1);
 
   const [reimbPage, setReimbPage] = useState(1);
   const [reimbTotal, setReimbTotal] = useState(1);
 
-  const fetchData = async () => {
+  // ✅ FIXED
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [uRes, lRes, rRes] = await Promise.allSettled([
@@ -61,51 +61,11 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [leavePage, reimbPage]);
 
   useEffect(() => {
     fetchData();
-  }, [leavePage, reimbPage]);
-
-  const handleDeleteUser = async (id) => {
-    try {
-      await api.delete(`/api/user/deleteUser/${id}`);
-      toast.success("User deleted successfully");
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to delete user");
-    }
-  };
-
-  const handleUpdateRole = async (id, role) => {
-    try {
-      await api.put(`/api/user/updateRole/${id}`, { role });
-      toast.success(`User role updated to ${role}`);
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update role");
-    }
-  };
-
-  const handleUpdateLeave = async (id, status) => {
-    try {
-      await api.put(`/api/leave/updateLeave/${id}`, { status });
-      toast.success(`Leave ${status} successfully`);
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update");
-    }
-  };
-
-  const handleUpdateReimb = async (id, status) => {
-    try {
-      await api.put(`/api/reimbursement/update/${id}`, { status });
-      toast.success(`Reimbursement ${status} successfully`);
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update");
-    }
-  };
+  }, [fetchData]);
 
   const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
 
@@ -119,45 +79,6 @@ const AdminDashboard = () => {
     pending: countByStatus(allReimb, "pending"),
     approved: countByStatus(allReimb, "approved"),
     rejected: countByStatus(allReimb, "rejected"),
-  };
-
-  const renderPagination = () => {
-    if (activeTab === "leaves") {
-      return (
-        <div className="flex justify-center gap-4 mt-4">
-          <button disabled={leavePage === 1} onClick={() => setLeavePage(p => p - 1)}>Prev</button>
-          <span>Page {leavePage} / {leaveTotal}</span>
-          <button disabled={leavePage === leaveTotal} onClick={() => setLeavePage(p => p + 1)}>Next</button>
-        </div>
-      );
-    }
-
-    if (activeTab === "reimbursements") {
-      return (
-        <div className="flex justify-center gap-4 mt-4">
-          <button disabled={reimbPage === 1} onClick={() => setReimbPage(p => p - 1)}>Prev</button>
-          <span>Page {reimbPage} / {reimbTotal}</span>
-          <button disabled={reimbPage === reimbTotal} onClick={() => setReimbPage(p => p + 1)}>Next</button>
-        </div>
-      );
-    }
-
-    return null;
-  };
-
-  const renderContent = () => {
-    if (loading) return <p className="text-center py-6">Loading...</p>;
-
-    switch (activeTab) {
-      case "users":
-        return <UserTable users={users} onUpdateRole={handleUpdateRole} onDeleteUser={handleDeleteUser} />;
-      case "leaves":
-        return <TeamLeaveTable leaves={allLeaves} onUpdate={handleUpdateLeave} />;
-      case "reimbursements":
-        return <TeamReimbursementTable reimbursements={allReimb} onUpdate={handleUpdateReimb} />;
-      default:
-        return null;
-    }
   };
 
   return (
@@ -177,8 +98,15 @@ const AdminDashboard = () => {
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {renderContent()}
-      {renderPagination()}
+      {loading ? (
+        <p className="text-center py-6">Loading...</p>
+      ) : activeTab === "users" ? (
+        <UserTable users={users} />
+      ) : activeTab === "leaves" ? (
+        <TeamLeaveTable leaves={allLeaves} />
+      ) : (
+        <TeamReimbursementTable reimbursements={allReimb} />
+      )}
     </div>
   );
 };

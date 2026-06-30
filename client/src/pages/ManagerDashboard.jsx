@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
@@ -7,8 +7,6 @@ import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
 import StatusChart from "../components/StatusChart";
 import TabBar from "../components/TabBar";
-import LeaveForm from "../components/LeaveForm";
-import ReimbursementForm from "../components/ReimbursementForm";
 import LeaveTable from "../components/LeaveTable";
 import ReimbursementTable from "../components/ReimbursementTable";
 import TeamLeaveTable from "../components/TeamLeaveTable";
@@ -33,7 +31,6 @@ const ManagerDashboard = () => {
   const [teamLeaves, setTeamLeaves] = useState([]);
   const [teamReimb, setTeamReimb] = useState([]);
 
-  // ✅ Pagination states
   const [myLeavePage, setMyLeavePage] = useState(1);
   const [myLeaveTotal, setMyLeaveTotal] = useState(1);
 
@@ -46,7 +43,8 @@ const ManagerDashboard = () => {
   const [teamReimbPage, setTeamReimbPage] = useState(1);
   const [teamReimbTotal, setTeamReimbTotal] = useState(1);
 
-  const fetchData = async () => {
+  // ✅ FIXED: useCallback
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [ml, mr, tl, tr] = await Promise.allSettled([
@@ -80,25 +78,19 @@ const ManagerDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [myLeavePage, myReimbPage, teamLeavePage, teamReimbPage]);
 
   useEffect(() => {
     fetchData();
-  }, [myLeavePage, myReimbPage, teamLeavePage, teamReimbPage]);
+  }, [fetchData]);
 
   const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
 
-  const getActiveData = () => {
-    switch (activeTab) {
-      case "my-leaves": return myLeaves;
-      case "my-reimbursements": return myReimbursements;
-      case "team-leaves": return teamLeaves;
-      case "team-reimbursements": return teamReimb;
-      default: return [];
-    }
-  };
-
-  const activeData = getActiveData();
+  const activeData =
+    activeTab === "my-leaves" ? myLeaves :
+    activeTab === "my-reimbursements" ? myReimbursements :
+    activeTab === "team-leaves" ? teamLeaves :
+    teamReimb;
 
   const activeStats = {
     pending: countByStatus(activeData, "pending"),
@@ -142,13 +134,12 @@ const ManagerDashboard = () => {
 
     switch (activeTab) {
       case "my-leaves":
-      return (
-       <>
-        <LeaveCalendar leaves={myLeaves} />
-        <LeaveTable leaves={myLeaves} />
-       </>
-       );
-
+        return (
+          <>
+            <LeaveCalendar leaves={myLeaves} />
+            <LeaveTable leaves={myLeaves} />
+          </>
+        );
       case "my-reimbursements":
         return <ReimbursementTable reimbursements={myReimbursements} />;
       case "team-leaves":
