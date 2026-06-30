@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/Footer"; 
+
 import {
   FiCalendar,
   FiShield,
@@ -282,7 +284,10 @@ const LandingPage = () => {
                 >
                   {f.title}
                 </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {f.desc}
                 </p>
               </div>
