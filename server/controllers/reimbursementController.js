@@ -136,18 +136,7 @@ const getAllReimbursement = async (req, res, next) => {
   }
 }
 
-//  get all reimbursement for admin or manager
-const getAllReimbursement = asyncHandler(async (req, res) => {
-  
-    .populate("user", "name email role")
-    .sort({ createdAt: -1 });
 
-  return res.status(200).json({
-    success: true,
-    data: reimbursements,
-    reimbursements
-  });
-});
 
 //  update bill on an existing reimbursement
 const updateBill = asyncHandler(async (req, res) => {
