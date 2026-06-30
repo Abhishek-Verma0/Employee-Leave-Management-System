@@ -1,14 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiClock, FiCheckCircle, FiXCircle, FiCalendar, FiDollarSign, FiUmbrella } from "react-icons/fi";
+import { FiCheckCircle, FiCalendar, FiUmbrella } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
-import StatusChart from "../components/StatusChart";
 import TabBar from "../components/TabBar";
-import LeaveForm from "../components/LeaveForm";
-import ReimbursementForm from "../components/ReimbursementForm";
 import LeaveTable from "../components/LeaveTable";
 import ReimbursementTable from "../components/ReimbursementTable";
 import LeaveCalendar from "../components/LeaveCalendar";
@@ -28,14 +25,14 @@ const EmployeeDashboard = () => {
   const [activeTab, setActiveTab] = useState("leaves");
   const [loading, setLoading] = useState(true);
 
-  // ✅ Separate pagination states
   const [leavePage, setLeavePage] = useState(1);
   const [leaveTotalPages, setLeaveTotalPages] = useState(1);
 
   const [reimbPage, setReimbPage] = useState(1);
   const [reimbTotalPages, setReimbTotalPages] = useState(1);
 
-  const fetchData = async () => {
+
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [lRes, rRes, bRes] = await Promise.allSettled([
@@ -60,33 +57,12 @@ const EmployeeDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchData();
   }, [leavePage, reimbPage]);
 
-  const handleApplyLeave = async (data) => {
-    try {
-      await api.post("/api/leave/applyLeave", data);
-      toast.success("Leave applied successfully");
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to apply leave");
-    }
-  };
-
-  const handleApplyReimb = async (formData) => {
-    try {
-      await api.post("/api/reimbursement/applyReimbursement", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("Reimbursement applied successfully");
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to apply reimbursement");
-    }
-  };
+  
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleUpdateBill = async (id, formData) => {
     try {
@@ -110,7 +86,8 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
+  const countByStatus = (arr, s) =>
+    arr.filter((x) => x.status === s).length;
 
   const leaveStats = {
     pending: countByStatus(leaves, "pending"),
@@ -125,38 +102,62 @@ const EmployeeDashboard = () => {
   };
 
   const isLeaves = activeTab === "leaves";
-  const currentData = isLeaves ? leaves : reimbursements;
-  const currentStats = isLeaves ? leaveStats : reimbStats;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      <PageHeader title={`Welcome, ${user?.name}`} subtitle="Employee Dashboard" />
+      <PageHeader
+        title={`Welcome, ${user?.name}`}
+        subtitle="Employee Dashboard"
+      />
 
-      <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      <TabBar
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-      {/* Leave Balance */}
+
       {isLeaves && leaveBalance && (
         <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-4">
-          <SummaryCard icon={<FiUmbrella size={18} />} count={leaveBalance.remainingLeaveDays} label="Remaining Leave Days" />
-          <SummaryCard icon={<FiCalendar size={18} />} count={leaveBalance.totalLeaveDays} label="Total Leave Days" />
-          <SummaryCard icon={<FiCheckCircle size={18} />} count={leaveBalance.usedLeaveDays} label="Used Leave Days" />
+          <SummaryCard
+            icon={<FiUmbrella size={18} />}
+            count={leaveBalance.remainingLeaveDays}
+            label="Remaining Leave Days"
+          />
+          <SummaryCard
+            icon={<FiCalendar size={18} />}
+            count={leaveBalance.totalLeaveDays}
+            label="Total Leave Days"
+          />
+          <SummaryCard
+            icon={<FiCheckCircle size={18} />}
+            count={leaveBalance.usedLeaveDays}
+            label="Used Leave Days"
+          />
         </div>
       )}
 
-      {/* Tables */}
       {loading ? (
         <p className="py-8 text-center text-sm">Loading...</p>
       ) : isLeaves ? (
         <>
           <LeaveTable leaves={leaves} />
 
-          {/* ✅ Pagination */}
+   
           <div className="flex justify-center gap-4 mt-4">
-            <button disabled={leavePage === 1} onClick={() => setLeavePage(p => p - 1)}>
+            <button
+              disabled={leavePage === 1}
+              onClick={() => setLeavePage((p) => p - 1)}
+            >
               Prev
             </button>
-            <span>Page {leavePage} / {leaveTotalPages}</span>
-            <button disabled={leavePage === leaveTotalPages} onClick={() => setLeavePage(p => p + 1)}>
+            <span>
+              Page {leavePage} / {leaveTotalPages}
+            </span>
+            <button
+              disabled={leavePage === leaveTotalPages}
+              onClick={() => setLeavePage((p) => p + 1)}
+            >
               Next
             </button>
           </div>
@@ -169,13 +170,21 @@ const EmployeeDashboard = () => {
             onDeleteBill={handleDeleteBill}
           />
 
-          {/* ✅ Pagination */}
+        
           <div className="flex justify-center gap-4 mt-4">
-            <button disabled={reimbPage === 1} onClick={() => setReimbPage(p => p - 1)}>
+            <button
+              disabled={reimbPage === 1}
+              onClick={() => setReimbPage((p) => p - 1)}
+            >
               Prev
             </button>
-            <span>Page {reimbPage} / {reimbTotalPages}</span>
-            <button disabled={reimbPage === reimbTotalPages} onClick={() => setReimbPage(p => p + 1)}>
+            <span>
+              Page {reimbPage} / {reimbTotalPages}
+            </span>
+            <button
+              disabled={reimbPage === reimbTotalPages}
+              onClick={() => setReimbPage((p) => p + 1)}
+            >
               Next
             </button>
           </div>
