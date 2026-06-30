@@ -138,7 +138,7 @@ const getAllReimbursement = async (req, res, next) => {
 
 //  get all reimbursement for admin or manager
 const getAllReimbursement = asyncHandler(async (req, res) => {
-  const reimbursements = await Reimbursement.find({ user: { $ne: req.user.id } })
+  
     .populate("user", "name email role")
     .sort({ createdAt: -1 });
 
