@@ -73,12 +73,20 @@ const registerUser = asyncHandler(async (req, res) => {
     const adminExists = await User.findOne({ role: "admin" });
     
     if (!adminExists) {
-        // Determine the absolute first user deterministically using _id sorting
-        const firstInsertedUser = await User.findOne().sort({ _id: 1 });
-        if (firstInsertedUser && firstInsertedUser._id.equals(user._id)) {
-            user.role = "admin";
-            await user.save();
-            isFirstUser = true;
+        // Promote the user to admin to solve bootstrapping.
+        user.role = "admin";
+        await user.save();
+        isFirstUser = true;
+
+        // Resolve potential race conditions by ensuring only the oldest admin remains an admin
+        // if multiple admins were created concurrently during bootstrapping.
+        const concurrentAdmins = await User.find({ role: "admin" }).sort({ _id: 1 });
+        if (concurrentAdmins.length > 1) {
+            if (!concurrentAdmins[0]._id.equals(user._id)) {
+                user.role = "Approval-Pending";
+                await user.save();
+                isFirstUser = false;
+            }
         }
     }
 
