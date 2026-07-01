@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { FiUsers, FiCalendar, FiDollarSign, FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { FiUsers, FiCalendar, FiDollarSign } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
 import StatusChart from "../components/StatusChart";
@@ -65,6 +65,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leavePage, reimbPage]);
 
   const handleDeleteUser = async (id) => {
