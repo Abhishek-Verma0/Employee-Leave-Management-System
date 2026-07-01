@@ -86,6 +86,71 @@ const ManagerDashboard = () => {
     fetchData();
   }, [myLeavePage, myReimbPage, teamLeavePage, teamReimbPage]);
 
+  const handleApplyLeave = async (data) => {
+    try {
+      await api.post("/api/leave/applyLeave", data);
+      toast.success("Leave applied successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to apply leave");
+    }
+  };
+
+  const handleApplyReimb = async (formData) => {
+    try {
+      await api.post("/api/reimbursement/applyReimbursement", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Reimbursement applied successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to apply reimbursement");
+    }
+  };
+
+  const handleUpdateBill = async (id, formData) => {
+    try {
+      await api.put(`/api/reimbursement/updateBill/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Bill updated successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update bill");
+    }
+  };
+
+  const handleDeleteBill = async (id) => {
+    try {
+      await api.delete(`/api/reimbursement/deleteBill/${id}`);
+      toast.success("Bill deleted successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to delete bill");
+    }
+  };
+
+  const handleUpdateLeave = async (id, status) => {
+    try {
+      await api.put(`/api/leave/updateLeave/${id}`, { status });
+      toast.success(`Leave ${status} successfully`);
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update");
+    }
+  };
+
+  const handleUpdateReimb = async (id, status) => {
+    try {
+      await api.put(`/api/reimbursement/update/${id}`, { status });
+      toast.success(`Reimbursement ${status} successfully`);
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update");
+    }
+  };
+>>>>>>> ea1d853 (chore: fix all linting errors and warnings in client dashboard and auth components)
+
   const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
 
   const getActiveData = () => {
