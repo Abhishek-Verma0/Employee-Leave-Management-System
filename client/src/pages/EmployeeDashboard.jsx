@@ -66,27 +66,7 @@ const EmployeeDashboard = () => {
     fetchData();
   }, [leavePage, reimbPage]);
 
-  const handleApplyLeave = async (data) => {
-    try {
-      await api.post("/api/leave/applyLeave", data);
-      toast.success("Leave applied successfully");
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to apply leave");
-    }
-  };
 
-  const handleApplyReimb = async (formData) => {
-    try {
-      await api.post("/api/reimbursement/applyReimbursement", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("Reimbursement applied successfully");
-      fetchData();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to apply reimbursement");
-    }
-  };
 
   const handleUpdateBill = async (id, formData) => {
     try {
@@ -110,23 +90,10 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
 
-  const leaveStats = {
-    pending: countByStatus(leaves, "pending"),
-    approved: countByStatus(leaves, "approved"),
-    rejected: countByStatus(leaves, "rejected"),
-  };
 
-  const reimbStats = {
-    pending: countByStatus(reimbursements, "pending"),
-    approved: countByStatus(reimbursements, "approved"),
-    rejected: countByStatus(reimbursements, "rejected"),
-  };
 
   const isLeaves = activeTab === "leaves";
-  const currentData = isLeaves ? leaves : reimbursements;
-  const currentStats = isLeaves ? leaveStats : reimbStats;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
