@@ -123,7 +123,7 @@ const updateLeave = asyncHandler(async (req, res) => {
         });
     }
 
-    const leave = await Leave.findById(leaveId).populate("user");
+    const leave = await Leave.findById(leaveId).populate("user", "-password");
 
     if (!leave) {
         return res.status(404).json({
