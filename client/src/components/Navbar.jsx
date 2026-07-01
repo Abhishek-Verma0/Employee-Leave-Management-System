@@ -19,7 +19,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hovered, setHovered] = useState(null);
 
   const handleLogout = () => {
     logout();
@@ -50,7 +49,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="border-b px-4 py-3 sm:px-6"
+        className="border-b px-8 py-3 sm:px-12"
         style={{
           backgroundColor: "var(--bg-nav)",
           borderColor: "var(--border-color)",
@@ -60,20 +59,20 @@ const Navbar = () => {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <Link
             to={user ? getDashboardPath() : "/"}
-            className="text-lg font-bold tracking-tight sm:text-xl"
+            className="flex items-center text-lg font-bold tracking-tight sm:text-xl"
             style={{ color: "var(--text-primary)" }}
           >
             <span style={{ color: "#6366f1" }}>Swiftly</span>
           </Link>
 
-          <div className="hidden items-center gap-6 sm:flex">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-5">
               {navItems.map((item) => (
                 <button
                   key={item.name}
                   type="button"
                   onClick={() => handleNav(item.to)}
-                  className="text-sm font-medium transition-colors hover:text-indigo-500"
+                  className="nav-link-hover flex items-center text-sm font-medium transition-colors hover:text-indigo-500"
                   style={{ color: "var(--text-secondary)" }}
                 >
                   {item.name}
@@ -83,7 +82,7 @@ const Navbar = () => {
 
             {user && (
               <span
-                className="rounded-full px-3 py-1 text-xs font-medium uppercase"
+                className="flex items-center rounded-full px-3 py-1 text-xs font-medium uppercase"
                 style={{
                   backgroundColor: "var(--bg-secondary)",
                   color: "var(--text-secondary)",
@@ -93,51 +92,39 @@ const Navbar = () => {
               </span>
             )}
 
-<button
-  onClick={toggleTheme}
-  className="inline-flex items-center justify-center rounded-lg p-2 transition-colors"
-  style={{
-    color: "var(--text-secondary)",
-    backgroundColor: "var(--bg-secondary)",
-  }}
-  title="Toggle theme"
->
-  {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
-</button>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center justify-center rounded-lg p-2 transition-colors ml-2"
+              style={{
+                color: "var(--text-secondary)",
+                backgroundColor: "var(--bg-secondary)",
+              }}
+              title="Toggle theme"
+            >
+              {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
+            </button>
 
             {user ? (
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors"
+                className="flex items-center justify-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors"
                 style={{ backgroundColor: "#6366f1" }}
               >
                 <FiLogOut size={14} />
                 Logout
               </button>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <Link
                   to="/login"
-                  onMouseEnter={() => setHovered("login")}
-                  onMouseLeave={() => setHovered(null)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold border border-indigo-500 transition-all duration-300 ${
-                    hovered === "login"
-                      ? "bg-indigo-500 text-white"
-                      : "bg-transparent text-indigo-500"
-                  }`}
+                  className="flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 hover:bg-[var(--bg-secondary)]"
                 >
                   Login
                 </Link>
 
                 <Link
                   to="/register"
-                  onMouseEnter={() => setHovered("register")}
-                  onMouseLeave={() => setHovered(null)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold border border-indigo-500 transition-all duration-300 ${
-                    hovered === "register"
-                      ? "bg-indigo-500 text-white"
-                      : "bg-transparent text-indigo-500"
-                  }`}
+                  className="flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold bg-indigo-500 text-white border border-indigo-500 transition-all duration-300 hover:bg-indigo-600 hover:border-indigo-600 hover:shadow-md"
                 >
                   Register
                 </Link>
@@ -146,7 +133,7 @@ const Navbar = () => {
           </div>
 
           <button
-            className="flex h-11 w-11 items-center justify-center rounded-xl border transition-colors sm:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border transition-colors sm:hidden"
             style={{
               color: "var(--text-primary)",
               borderColor: "var(--border-color)",
@@ -177,7 +164,7 @@ const Navbar = () => {
               </Link>
 
               <button
-                className="rounded-xl p-2 text-xl"
+                className="rounded-lg p-2 text-xl"
                 style={{ color: "var(--text-primary)" }}
                 onClick={() => setMenuOpen(false)}
                 aria-label="Close navigation"
@@ -192,7 +179,7 @@ const Navbar = () => {
                   key={item.name}
                   type="button"
                   onClick={() => handleNav(item.to)}
-                  className="rounded-2xl px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-indigo-50 hover:text-indigo-600"
+                  className="rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-[var(--bg-secondary)] hover:text-indigo-500"
                   style={{ color: "var(--text-primary)" }}
                 >
                   {item.name}
@@ -213,7 +200,7 @@ const Navbar = () => {
 
               <button
                 onClick={toggleTheme}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition-colors"
                 style={{
                   color: "var(--text-primary)",
                   backgroundColor: "var(--bg-secondary)",
@@ -230,7 +217,7 @@ const Navbar = () => {
                     handleLogout();
                     setMenuOpen(false);
                   }}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-white transition-colors"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white transition-colors"
                   style={{ backgroundColor: "#6366f1" }}
                 >
                   <FiLogOut size={16} />
@@ -241,13 +228,7 @@ const Navbar = () => {
                   <Link
                     to="/login"
                     onClick={() => setMenuOpen(false)}
-                    onMouseEnter={() => setHovered("login")}
-                    onMouseLeave={() => setHovered(null)}
-                    className={`inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold border transition-all duration-300 ${
-                      hovered === "login"
-                        ? "border-indigo-500 bg-indigo-500 text-white"
-                        : "border-indigo-500 bg-transparent text-indigo-500"
-                    }`}
+                    className="inline-flex items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 hover:bg-[var(--bg-secondary)]"
                   >
                     Login
                   </Link>
@@ -255,13 +236,7 @@ const Navbar = () => {
                   <Link
                     to="/register"
                     onClick={() => setMenuOpen(false)}
-                    onMouseEnter={() => setHovered("register")}
-                    onMouseLeave={() => setHovered(null)}
-                    className={`inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold border transition-all duration-300 ${
-                      hovered === "register"
-                        ? "border-indigo-500 bg-indigo-500 text-white"
-                        : "border-indigo-500 bg-transparent text-indigo-500"
-                    }`}
+                    className="inline-flex items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold bg-indigo-500 text-white border border-indigo-500 transition-all duration-300 hover:bg-indigo-600"
                   >
                     Register
                   </Link>
