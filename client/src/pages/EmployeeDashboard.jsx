@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { FiClock, FiCheckCircle, FiXCircle, FiCalendar, FiDollarSign, FiUmbrella } from "react-icons/fi";
 import PageHeader from "../components/PageHeader";
 import SummaryCard from "../components/SummaryCard";
-import StatusChart from "../components/StatusChart";
+
 import TabBar from "../components/TabBar";
 import LeaveForm from "../components/LeaveForm";
 import ReimbursementForm from "../components/ReimbursementForm";
@@ -64,6 +64,7 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leavePage, reimbPage]);
 
   const handleApplyLeave = async (data) => {
@@ -110,29 +111,22 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
-
-  const leaveStats = {
-    pending: countByStatus(leaves, "pending"),
-    approved: countByStatus(leaves, "approved"),
-    rejected: countByStatus(leaves, "rejected"),
-  };
-
-  const reimbStats = {
-    pending: countByStatus(reimbursements, "pending"),
-    approved: countByStatus(reimbursements, "approved"),
-    rejected: countByStatus(reimbursements, "rejected"),
-  };
 
   const isLeaves = activeTab === "leaves";
-  const currentData = isLeaves ? leaves : reimbursements;
-  const currentStats = isLeaves ? leaveStats : reimbStats;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Employee Dashboard" />
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <div className="mb-4">
+        {isLeaves ? (
+          <LeaveForm onSubmit={handleApplyLeave} />
+        ) : (
+          <ReimbursementForm onSubmit={handleApplyReimb} />
+        )}
+      </div>
 
       {/* Leave Balance */}
       {isLeaves && leaveBalance && (

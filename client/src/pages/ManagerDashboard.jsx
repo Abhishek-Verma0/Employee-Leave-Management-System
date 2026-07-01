@@ -84,6 +84,7 @@ const ManagerDashboard = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myLeavePage, myReimbPage, teamLeavePage, teamReimbPage]);
 
   const handleApplyLeave = async (data) => {
@@ -149,7 +150,7 @@ const ManagerDashboard = () => {
       toast.error(err.response?.data?.message || "Failed to update");
     }
   };
->>>>>>> ea1d853 (chore: fix all linting errors and warnings in client dashboard and auth components)
+
 
   const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
 
@@ -215,11 +216,11 @@ const ManagerDashboard = () => {
        );
 
       case "my-reimbursements":
-        return <ReimbursementTable reimbursements={myReimbursements} />;
+        return <ReimbursementTable reimbursements={myReimbursements} onUpdateBill={handleUpdateBill} onDeleteBill={handleDeleteBill} />;
       case "team-leaves":
-        return <TeamLeaveTable leaves={teamLeaves} />;
+        return <TeamLeaveTable leaves={teamLeaves} onUpdate={handleUpdateLeave} currentUserRole={user?.role} />;
       case "team-reimbursements":
-        return <TeamReimbursementTable reimbursements={teamReimb} />;
+        return <TeamReimbursementTable reimbursements={teamReimb} onUpdate={handleUpdateReimb} />;
       default:
         return null;
     }
@@ -230,6 +231,11 @@ const ManagerDashboard = () => {
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Manager Dashboard" />
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <div className="mb-4">
+        {activeTab === "my-leaves" && <LeaveForm onSubmit={handleApplyLeave} />}
+        {activeTab === "my-reimbursements" && <ReimbursementForm onSubmit={handleApplyReimb} />}
+      </div>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-5">
         <div className="col-span-1 grid grid-cols-2 gap-3 sm:col-span-3">
