@@ -44,41 +44,31 @@ const applyReimbursement = asyncHandler(async (req, res) => {
   let billUrl = null;
   let billFileId = null;
 
-  //  upload bill if file is attached
-  if (req.file) {
-    const uploaded = await uploadToImageKit(req.file.buffer, req.file.originalname);
-    billUrl = uploaded.url;
-    billFileId = uploaded.fileId;
+const getReimbursement = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    const totalItems = await Reimbursement.countDocuments({ user: req.user.id })
+
+    const reimbursements = await Reimbursement.find({ user: req.user.id })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return res.status(200).json({
+      data: reimbursements,
+      currentPage: page,
+      totalPages,
+      totalItems
+    })
+  } catch (err) {
+    next(err)
   }
-
-  //  creating reimbursement
-  const reimbursement = await Reimbursement.create({
-    user: req.user.id,
-    amount: numericAmount,
-    expenseDate,
-    description,
-    billUrl,
-    billFileId,
-  });
-  
-  return res.status(201).json({
-    success: true,
-    message: "Reimbursement applied successfully",
-    data: reimbursement,
-    reimbursement,
-  });
-});
-
-//  getting all reimbursement from db for a particular user
-const getReimbursement = asyncHandler(async (req, res) => {
-  const reimbursements = await Reimbursement.find({ user: req.user.id }).sort(
-    { createdAt: -1 },
-  );
-  return res.status(200).json({
-    success: true,
-    data: reimbursements
-  });
-});
+}
 
 //  updating reimbursement status
 const updateReimbursement = asyncHandler(async (req, res) => {
@@ -107,54 +97,47 @@ const updateReimbursement = asyncHandler(async (req, res) => {
       message: "Reimbursement not found"
     });
   }
+
+  if (reimbursement.status !== "pending") {
+    return res.status(400).json({
+      success: false,
+      message: "Reimbursement status has already been finalized"
+    });
+  }
+
   const applicantRole = reimbursement.user.role;
   const approverRole = req.user.role;
 
-  if (approverRole === "manager" && applicantRole !== "employee") {
-    return res.status(403).json({
-      success: false,
-      message: "Manger can approve only employee reimbursement"
-    });
+const getAllReimbursement = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page - 1) * limit
+
+    const query = { user: { $ne: req.user.id } }
+
+    const totalItems = await Reimbursement.countDocuments(query)
+
+    const reimbursements = await Reimbursement.find(query)
+      .populate("user", "email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    const totalPages = Math.ceil(totalItems / limit)
+
+    return res.status(200).json({
+      data: reimbursements,
+      currentPage: page,
+      totalPages,
+      totalItems
+    })
+  } catch (err) {
+    next(err)
   }
-  if (approverRole === "admin" && applicantRole !== "manager") {
-    return res.status(403).json({
-      success: false,
-      message: "Admin can approve only manager reimbursement"
-    });
-  }
-  reimbursement.status = status;
-  await reimbursement.save();
+}
 
-  return res.status(200).json({
-    success: true,
-    message: `Reimbursement ${status} successfully`,
-    data: reimbursement,
-    reimbursement
-  });
-});
 
-//  get all reimbursement for admin or manager
-const getAllReimbursement = asyncHandler(async (req, res) => {
-  let targetUserIds = [];
-  
-  if (req.user.role === "manager") {
-      const employees = await User.find({ role: "employee" }).select("_id");
-      targetUserIds = employees.map(e => e._id);
-  } else if (req.user.role === "admin") {
-      const nonAdmins = await User.find({ role: { $ne: "admin" } }).select("_id");
-      targetUserIds = nonAdmins.map(u => u._id);
-  }
-
-  const reimbursements = await Reimbursement.find({ user: { $in: targetUserIds } })
-    .populate("user", "name email role")
-    .sort({ createdAt: -1 });
-
-  return res.status(200).json({
-    success: true,
-    data: reimbursements,
-    reimbursements
-  });
-});
 
 //  update bill on an existing reimbursement
 const updateBill = asyncHandler(async (req, res) => {
@@ -180,10 +163,11 @@ const updateBill = asyncHandler(async (req, res) => {
     });
   }
 
+  // Prevent modifying the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
   if (reimbursement.status !== "pending") {
     return res.status(400).json({
       success: false,
-      message: "Cannot modify the bill of a processed reimbursement"
+      message: "Cannot modify bill for a processed reimbursement"
     });
   }
 
@@ -237,10 +221,11 @@ const deleteBill = asyncHandler(async (req, res) => {
     });
   }
 
+  // Prevent deleting the bill of a reimbursement request that has already been approved or rejected (Integrity Check)
   if (reimbursement.status !== "pending") {
     return res.status(400).json({
       success: false,
-      message: "Cannot delete the bill of a processed reimbursement"
+      message: "Cannot delete bill for a processed reimbursement"
     });
   }
 

@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/Footer"; 
+
 import {
   FiCalendar,
   FiShield,
@@ -179,8 +181,7 @@ const LandingPage = () => {
             {user ? (
               <Link
                 to={`/${user.role}`}
-                className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-colors"
-                style={{ backgroundColor: "#6366f1" }}
+                className="inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3 text-sm font-semibold bg-indigo-500 text-white border border-indigo-500 transition-all duration-300 hover:bg-indigo-600 hover:shadow-md"
               >
                 Go to Dashboard
                 <FiArrowRight size={16} />
@@ -189,7 +190,7 @@ const LandingPage = () => {
               <>
                 <Link
                   to="/register"
-                  className="group inline-flex items-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-500 hover:text-white hover:shadow-md hover:scale-[1.02]"
+                  className="group inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3 text-sm font-semibold bg-indigo-500 text-white border border-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-600 hover:shadow-md hover:scale-[1.02]"
                 >
                   Get Started
                   <FiArrowRight
@@ -199,7 +200,7 @@ const LandingPage = () => {
                 </Link>
                 <Link
                   to="/login"
-                  className="group inline-flex items-center gap-2 rounded-xl px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-indigo-500 hover:text-white hover:shadow-sm hover:scale-[1.01]"
+                  className="group inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3 text-sm font-semibold border border-indigo-500 bg-transparent text-indigo-500 transition-all duration-300 ease-out hover:bg-[var(--bg-secondary)] hover:shadow-sm"
                 >
                   Sign In
                 </Link>
@@ -282,7 +283,10 @@ const LandingPage = () => {
                 >
                   {f.title}
                 </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {f.desc}
                 </p>
               </div>

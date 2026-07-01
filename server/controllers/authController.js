@@ -13,104 +13,80 @@ const toSafeUser = (user) => ({
 
 //  registering user
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, password } = req.body;
-    
-    // Email normalization and validation
-    const email = typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
-    if (!email) {
-        return res.status(400).json({
-            success: false,
-            message: "Email is required"
-        });
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({
-            success: false,
-            message: "Invalid email format"
-        });
-    }
+  const { name, password } = req.body;
 
-    if (typeof name !== "string" || !name.trim()) {
-        return res.status(400).json({
-            success: false,
-            message: "Name is required"
-        });
-    }
+  const email =
+    typeof req.body.email === "string"
+      ? req.body.email.trim().toLowerCase()
+      : "";
 
-    if (typeof password !== "string" || password.trim().length < 6) {
-        return res.status(400).json({
-            success: false,
-            message: "Password must be at least 6 characters"
-        });
-    }
-
-    //  user exist or not
-    const userExist = await User.findOne({ email });
-
-    if (userExist) {
-        return res.status(400).json({
-            success: false,
-            message: "user already exist"
-        });
-    }
-     
-    //  hashing pass
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    //  create user
-    //  Auto-promote the first registered user to admin to solve the
-    //  bootstrapping problem securely avoiding race conditions.
-    let user = await User.create({
-        name: name.trim(),
-        email,
-        password: hashedPassword,
-        role: "Approval-Pending",
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "Email is required",
     });
+  }
 
-    let isFirstUser = false;
-    const adminExists = await User.findOne({ role: "admin" });
-    
-    if (!adminExists) {
-        // Promote the user to admin to solve bootstrapping.
-        user.role = "admin";
-        await user.save();
-        isFirstUser = true;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        // Resolve potential race conditions by ensuring only the oldest admin remains an admin
-        // if multiple admins were created concurrently during bootstrapping.
-        const concurrentAdmins = await User.find({ role: "admin" }).sort({ _id: 1 });
-        if (concurrentAdmins.length > 1) {
-            if (!concurrentAdmins[0]._id.equals(user._id)) {
-                user.role = "Approval-Pending";
-                await user.save();
-                isFirstUser = false;
-            }
-        }
-    }
-
-    // gen JWT token
-    const token = await jwt.sign(
-        {
-            id: user._id,
-            role: user.role,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: "2h" },
-    );
-
-    const message = isFirstUser 
-        ? "Admin account created successfully." 
-        : "Registration successful! Please wait for an admin to verify and approve your account.";
-
-    //  response send
-    res.status(201).json({
-        success: true,
-        message,
-        token,
-        user: toSafeUser(user),
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid email format",
     });
+  }
+
+  if (typeof name !== "string" || !name.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Name is required",
+    });
+  }
+
+  if (typeof password !== "string" || password.trim().length < 6) {
+    return res.status(400).json({
+      success: false,
+      message: "Password must be at least 6 characters",
+    });
+  }
+
+  const userExist = await User.findOne({ email });
+
+  if (userExist) {
+    return res.status(400).json({
+      success: false,
+      message: "User already exists",
+    });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const userCount = await User.countDocuments();
+  const assignedRole =
+    userCount === 0 ? "admin" : "Approval-Pending";
+
+  const user = await User.create({
+    name: name.trim(),
+    email,
+    password: hashedPassword,
+    role: assignedRole,
+  });
+
+  const token = jwt.sign(
+    {
+      id: user._id,
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "2h" }
+  );
+
+  res.status(201).json({
+    success: true,
+    token,
+    user: toSafeUser(user),
+  });
 });
 
 //  log in
