@@ -82,6 +82,7 @@ const ManagerDashboard = () => {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchData();
   }, [myLeavePage, myReimbPage, teamLeavePage, teamReimbPage]);

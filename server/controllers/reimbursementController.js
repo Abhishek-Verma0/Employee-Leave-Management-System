@@ -1,4 +1,5 @@
 const Reimbursement = require("../models/Reimbursement");
+const User = require("../models/User");
 const imagekit = require("../config/imagekit");
 const { toFile } = require("@imagekit/nodejs");
 const mongoose = require("mongoose");
@@ -89,7 +90,7 @@ const updateReimbursement = asyncHandler(async (req, res) => {
   }
 
   const reimbursement =
-    await Reimbursement.findById(reimbursementId).populate("user");
+    await Reimbursement.findById(reimbursementId).populate("user", "-password");
   if (!reimbursement) {
     return res.status(404).json({
       success: false,

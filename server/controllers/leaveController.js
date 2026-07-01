@@ -1,6 +1,7 @@
 const Leave = require("../models/Leave");
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
+const User = require("../models/User");
 
 //  apply for leave
 const applyLeave = asyncHandler(async (req, res) => {
@@ -14,10 +15,40 @@ const applyLeave = asyncHandler(async (req, res) => {
         });
     }
 
-    if (new Date(toDate) < new Date(fromDate)) {
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+
+    if (to < from) {
         return res.status(400).json({
             success: false,
             message: "toDate cannot be before fromDate"
+        });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        });
+    }
+
+    // Calculate currently used leave days (only approved ones)
+    const approvedLeaves = await Leave.find({ user: req.user.id, status: "approved" });
+    let usedDays = 0;
+    for (const item of approvedLeaves) {
+        const lFrom = new Date(item.fromDate);
+        const lTo = new Date(item.toDate);
+        usedDays += Math.ceil((lTo - lFrom) / (1000 * 60 * 60 * 24)) + 1;
+    }
+
+    const remainingDays = Math.max(0, user.totalLeaveDays - usedDays);
+    const requestedDays = Math.ceil((to - from) / (1000 * 60 * 60 * 24)) + 1;
+
+    if (requestedDays > remainingDays) {
+        return res.status(400).json({
+            success: false,
+            message: `Requested leave duration (${requestedDays} days) exceeds remaining leave balance (${remainingDays} days)`
         });
     }
 
@@ -50,9 +81,17 @@ const getLeaves = asyncHandler(async (req, res) => {
 
 //  getting all user leave for manager role or admin
 const getAllLeaves = asyncHandler(async (req, res) => {
-    const leaves = await Leave.find({
-        user: { $ne: req.user.id }
-    })
+    let targetUserIds = [];
+    
+    if (req.user.role === "manager") {
+        const employees = await User.find({ role: "employee" }).select("_id");
+        targetUserIds = employees.map(e => e._id);
+    } else if (req.user.role === "admin") {
+        const nonAdmins = await User.find({ role: { $ne: "admin" } }).select("_id");
+        targetUserIds = nonAdmins.map(u => u._id);
+    }
+
+    const leaves = await Leave.find({ user: { $in: targetUserIds } })
         .populate("user", "name email role")
         .sort({ createdAt: -1 });
 
@@ -84,7 +123,7 @@ const updateLeave = asyncHandler(async (req, res) => {
         });
     }
 
-    const leave = await Leave.findById(leaveId).populate("user");
+    const leave = await Leave.findById(leaveId).populate("user", "-password");
 
     if (!leave) {
         return res.status(404).json({
@@ -121,6 +160,39 @@ const getLeaves = async (req, res) => {
     return res.status(500).json({ message: err.message })
   }
 }
+
+    if (status === "approved") {
+        const user = await User.findById(leave.user._id);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Calculate currently used leave days (excluding the current leave being approved)
+        const approvedLeaves = await Leave.find({ 
+            user: leave.user._id, 
+            status: "approved",
+            _id: { $ne: leaveId }
+        });
+        let usedDays = 0;
+        for (const item of approvedLeaves) {
+            const lFrom = new Date(item.fromDate);
+            const lTo = new Date(item.toDate);
+            usedDays += Math.ceil((lTo - lFrom) / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        const remainingDays = Math.max(0, user.totalLeaveDays - usedDays);
+        const requestedDays = Math.ceil((new Date(leave.toDate) - new Date(leave.fromDate)) / (1000 * 60 * 60 * 24)) + 1;
+
+        if (requestedDays > remainingDays) {
+            return res.status(400).json({
+                success: false,
+                message: `Cannot approve leave: request duration (${requestedDays} days) exceeds the employee's remaining leave balance (${remainingDays} days)`
+            });
+        }
+    }
 
     leave.status = status;
 
