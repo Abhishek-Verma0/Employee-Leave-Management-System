@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff, FiX } from "react-icons/fi";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -33,12 +33,23 @@ const LoginPage = () => {
   return (
     <div className="flex min-h-[calc(100vh-57px)] items-center justify-center px-4 py-8">
       <div
-        className="w-full max-w-sm rounded-xl border p-6"
+        className="relative w-full max-w-sm rounded-xl border p-6"
         style={{
           backgroundColor: "var(--bg-card)",
           borderColor: "var(--border-color)",
         }}
       >
+       <button
+          type="button"
+          onClick={() => navigate(-1)} 
+          className="absolute top-4 right-4 flex items-center justify-center rounded-lg p-1 transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+          style={{
+            color: "var(--text-secondary)",
+          }}
+          aria-label="Close"
+        >
+          <FiX size={18} />
+        </button>
         <h1
           className="mb-1 text-xl font-bold"
           style={{ color: "var(--text-primary)" }}
