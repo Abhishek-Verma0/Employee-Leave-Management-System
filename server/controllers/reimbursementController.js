@@ -43,6 +43,29 @@ const applyReimbursement = asyncHandler(async (req, res) => {
   let billUrl = null;
   let billFileId = null;
 
+  if (req.file) {
+    const uploaded = await uploadToImageKit(req.file.buffer, req.file.originalname);
+    billUrl = uploaded.url;
+    billFileId = uploaded.fileId;
+  }
+
+  const reimbursement = await Reimbursement.create({
+    user: req.user.id,
+    amount: numericAmount,
+    expenseDate,
+    description,
+    billUrl,
+    billFileId
+  });
+
+  return res.status(201).json({
+    success: true,
+    message: "Reimbursement applied successfully",
+    data: reimbursement,
+    reimbursement
+  });
+});
+
 const getReimbursement = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1
@@ -106,6 +129,17 @@ const updateReimbursement = asyncHandler(async (req, res) => {
 
   const applicantRole = reimbursement.user.role;
   const approverRole = req.user.role;
+
+  reimbursement.status = status;
+  await reimbursement.save();
+
+  return res.status(200).json({
+    success: true,
+    message: `Reimbursement status updated to ${status}`,
+    data: reimbursement,
+    reimbursement
+  });
+});
 
 const getAllReimbursement = async (req, res, next) => {
   try {
