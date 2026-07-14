@@ -9,6 +9,7 @@ import RegisterPage from "./pages/RegisterPage";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import PendingApprovalPage from "./pages/PendingApprovalPage";
 
 const App = () => {
   const { user, loading } = useAuth();
@@ -50,6 +51,14 @@ const App = () => {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Approval-Pending"
+            element={
+              <ProtectedRoute allowedRoles={["Approval-Pending"]}>
+                <PendingApprovalPage />
               </ProtectedRoute>
             }
           />
