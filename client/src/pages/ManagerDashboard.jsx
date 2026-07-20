@@ -84,7 +84,73 @@ const ManagerDashboard = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myLeavePage, myReimbPage, teamLeavePage, teamReimbPage]);
+
+  const handleApplyLeave = async (data) => {
+    try {
+      await api.post("/api/leave/applyLeave", data);
+      toast.success("Leave applied successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to apply leave");
+    }
+  };
+
+  const handleApplyReimb = async (formData) => {
+    try {
+      await api.post("/api/reimbursement/applyReimbursement", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Reimbursement applied successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to apply reimbursement");
+    }
+  };
+
+  const handleUpdateBill = async (id, formData) => {
+    try {
+      await api.put(`/api/reimbursement/updateBill/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Bill updated successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update bill");
+    }
+  };
+
+  const handleDeleteBill = async (id) => {
+    try {
+      await api.delete(`/api/reimbursement/deleteBill/${id}`);
+      toast.success("Bill deleted successfully");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to delete bill");
+    }
+  };
+
+  const handleUpdateLeave = async (id, status) => {
+    try {
+      await api.put(`/api/leave/updateLeave/${id}`, { status });
+      toast.success(`Leave ${status} successfully`);
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update");
+    }
+  };
+
+  const handleUpdateReimb = async (id, status) => {
+    try {
+      await api.put(`/api/reimbursement/update/${id}`, { status });
+      toast.success(`Reimbursement ${status} successfully`);
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update");
+    }
+  };
+
 
   const countByStatus = (arr, s) => arr.filter((x) => x.status === s).length;
 
@@ -150,11 +216,11 @@ const ManagerDashboard = () => {
        );
 
       case "my-reimbursements":
-        return <ReimbursementTable reimbursements={myReimbursements} />;
+        return <ReimbursementTable reimbursements={myReimbursements} onUpdateBill={handleUpdateBill} onDeleteBill={handleDeleteBill} />;
       case "team-leaves":
-        return <TeamLeaveTable leaves={teamLeaves} />;
+        return <TeamLeaveTable leaves={teamLeaves} onUpdate={handleUpdateLeave} currentUserRole={user?.role} />;
       case "team-reimbursements":
-        return <TeamReimbursementTable reimbursements={teamReimb} />;
+        return <TeamReimbursementTable reimbursements={teamReimb} onUpdate={handleUpdateReimb} />;
       default:
         return null;
     }
@@ -165,6 +231,11 @@ const ManagerDashboard = () => {
       <PageHeader title={`Welcome, ${user?.name}`} subtitle="Manager Dashboard" />
 
       <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      <div className="mb-4">
+        {activeTab === "my-leaves" && <LeaveForm onSubmit={handleApplyLeave} />}
+        {activeTab === "my-reimbursements" && <ReimbursementForm onSubmit={handleApplyReimb} />}
+      </div>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-5">
         <div className="col-span-1 grid grid-cols-2 gap-3 sm:col-span-3">
