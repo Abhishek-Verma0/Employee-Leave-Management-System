@@ -125,8 +125,29 @@ const updateReimbursement = asyncHandler(async (req, res) => {
     });
   }
 
+  if (!reimbursement.user) {
+    return res.status(400).json({
+      success: false,
+      message: "Applicant user no longer exists"
+    });
+  }
+
+  if (reimbursement.user._id.toString() === req.user.id) {
+    return res.status(403).json({
+      success: false,
+      message: "You cannot approve or reject your own reimbursement"
+    });
+  }
+
   const applicantRole = reimbursement.user.role;
   const approverRole = req.user.role;
+
+  if (approverRole === "manager" && applicantRole !== "employee") {
+    return res.status(403).json({
+      success: false,
+      message: "Managers can only approve or reject reimbursements for employees"
+    });
+  }
 
   reimbursement.status = status;
   await reimbursement.save();

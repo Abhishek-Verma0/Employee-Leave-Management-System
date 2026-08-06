@@ -120,8 +120,29 @@ const updateLeave = asyncHandler(async (req, res) => {
         });
     }
 
+    if (!leave.user) {
+        return res.status(400).json({
+            success: false,
+            message: "Applicant user no longer exists"
+        });
+    }
+
+    if (leave.user._id.toString() === req.user.id) {
+        return res.status(403).json({
+            success: false,
+            message: "You cannot approve or reject your own leave"
+        });
+    }
+
     const applicantRole = leave.user.role;
     const approverRole = req.user.role;
+
+    if (approverRole === "manager" && applicantRole !== "employee") {
+        return res.status(403).json({
+            success: false,
+            message: "Managers can only approve or reject leaves for employees"
+        });
+    }
 
     leave.status = status;
 
