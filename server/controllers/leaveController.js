@@ -1,4 +1,5 @@
 const Leave = require("../models/Leave");
+const User = require("../models/User");
 const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 
@@ -39,26 +40,52 @@ const applyLeave = asyncHandler(async (req, res) => {
 
 //  getting all leaves from db for the particular user
 const getLeaves = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalItems = await Leave.countDocuments({ user: req.user.id });
+
     const leaves = await Leave.find({ user: req.user.id })
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const totalPages = Math.ceil(totalItems / limit);
 
     return res.status(200).json({
         success: true,
-        data: leaves
+        data: leaves,
+        currentPage: page,
+        totalPages,
+        totalItems
     });
 });
 
 //  getting all user leave for manager role or admin
 const getAllLeaves = asyncHandler(async (req, res) => {
-    const leaves = await Leave.find({
-        user: { $ne: req.user.id }
-    })
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const query = { user: { $ne: req.user.id } };
+
+    const totalItems = await Leave.countDocuments(query);
+
+    const leaves = await Leave.find(query)
         .populate("user", "name email role")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const totalPages = Math.ceil(totalItems / limit);
 
     return res.status(200).json({
         success: true,
-        data: leaves
+        data: leaves,
+        currentPage: page,
+        totalPages,
+        totalItems
     });
 });
 
@@ -93,68 +120,50 @@ const updateLeave = asyncHandler(async (req, res) => {
         });
     }
 
+    if (!leave.user) {
+        return res.status(400).json({
+            success: false,
+            message: "Applicant user no longer exists"
+        });
+    }
+
+    if (leave.user._id.toString() === req.user.id) {
+        return res.status(403).json({
+            success: false,
+            message: "You cannot approve or reject your own leave"
+        });
+    }
+
     const applicantRole = leave.user.role;
     const approverRole = req.user.role;
 
-const getLeaves = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
-    const skip = (page - 1) * limit
-
-    const totalItems = await Leave.countDocuments({ user: req.user.id })
-
-    const leaves = await Leave.find({ user: req.user.id })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-
-    const totalPages = Math.ceil(totalItems / limit)
-
-    return res.status(200).json({
-      data: leaves,
-      currentPage: page,
-      totalPages,
-      totalItems
-    })
-  } catch (err) {
-    return res.status(500).json({ message: err.message })
-  }
-}
+    if (approverRole === "manager" && applicantRole !== "employee") {
+        return res.status(403).json({
+            success: false,
+            message: "Managers can only approve or reject leaves for employees"
+        });
+    }
 
     leave.status = status;
 
     await leave.save();
 
-
-const getAllLeaves = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
-    const skip = (page - 1) * limit
-
-    const query = { user: { $ne: req.user.id } }
-
-    const totalItems = await Leave.countDocuments(query)
-
-    const leaves = await Leave.find(query)
-      .populate("user", "email role")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-
-    const totalPages = Math.ceil(totalItems / limit)
-
     return res.status(200).json({
-      data: leaves,
-      currentPage: page,
-      totalPages,
-      totalItems
-    })
-  } catch (err) {
-    return res.status(500).json({ message: err.message })
-  }
-}
+        success: true,
+        message: "Leave status updated successfully",
+        data: leave
+    });
+});
+
+// get leave balance
+const getLeaveBalance = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        });
+    }
 
     // Approved leaves
     const approvedLeaves = await Leave.find({
@@ -214,5 +223,4 @@ module.exports = {
     getAllLeaves,
     updateLeave,
     getLeaveBalance
-
 };

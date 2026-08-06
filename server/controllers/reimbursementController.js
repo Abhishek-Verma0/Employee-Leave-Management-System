@@ -43,31 +43,52 @@ const applyReimbursement = asyncHandler(async (req, res) => {
   let billUrl = null;
   let billFileId = null;
 
-const getReimbursement = async (req, res, next) => {
-  try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
-    const skip = (page - 1) * limit
-
-    const totalItems = await Reimbursement.countDocuments({ user: req.user.id })
-
-    const reimbursements = await Reimbursement.find({ user: req.user.id })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-
-    const totalPages = Math.ceil(totalItems / limit)
-
-    return res.status(200).json({
-      data: reimbursements,
-      currentPage: page,
-      totalPages,
-      totalItems
-    })
-  } catch (err) {
-    next(err)
+  if (req.file) {
+    const uploaded = await uploadToImageKit(req.file.buffer, req.file.originalname);
+    billUrl = uploaded.url;
+    billFileId = uploaded.fileId;
   }
-}
+
+  const reimbursement = await Reimbursement.create({
+    user: req.user.id,
+    amount: numericAmount,
+    expenseDate,
+    description,
+    billUrl,
+    billFileId
+  });
+
+  return res.status(201).json({
+    success: true,
+    message: "Reimbursement applied successfully",
+    data: reimbursement,
+    reimbursement
+  });
+});
+
+// get reimbursement
+const getReimbursement = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const totalItems = await Reimbursement.countDocuments({ user: req.user.id });
+
+  const reimbursements = await Reimbursement.find({ user: req.user.id })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalPages = Math.ceil(totalItems / limit);
+
+  return res.status(200).json({
+    success: true,
+    data: reimbursements,
+    currentPage: page,
+    totalPages,
+    totalItems
+  });
+});
 
 //  updating reimbursement status
 const updateReimbursement = asyncHandler(async (req, res) => {
@@ -104,39 +125,66 @@ const updateReimbursement = asyncHandler(async (req, res) => {
     });
   }
 
+  if (!reimbursement.user) {
+    return res.status(400).json({
+      success: false,
+      message: "Applicant user no longer exists"
+    });
+  }
+
+  if (reimbursement.user._id.toString() === req.user.id) {
+    return res.status(403).json({
+      success: false,
+      message: "You cannot approve or reject your own reimbursement"
+    });
+  }
+
   const applicantRole = reimbursement.user.role;
   const approverRole = req.user.role;
 
-const getAllReimbursement = async (req, res, next) => {
-  try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
-    const skip = (page - 1) * limit
-
-    const query = { user: { $ne: req.user.id } }
-
-    const totalItems = await Reimbursement.countDocuments(query)
-
-    const reimbursements = await Reimbursement.find(query)
-      .populate("user", "email")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-
-    const totalPages = Math.ceil(totalItems / limit)
-
-    return res.status(200).json({
-      data: reimbursements,
-      currentPage: page,
-      totalPages,
-      totalItems
-    })
-  } catch (err) {
-    next(err)
+  if (approverRole === "manager" && applicantRole !== "employee") {
+    return res.status(403).json({
+      success: false,
+      message: "Managers can only approve or reject reimbursements for employees"
+    });
   }
-}
 
+  reimbursement.status = status;
+  await reimbursement.save();
 
+  return res.status(200).json({
+    success: true,
+    message: "Reimbursement status updated successfully",
+    data: reimbursement
+  });
+});
+
+// get all reimbursement
+const getAllReimbursement = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const query = { user: { $ne: req.user.id } };
+
+  const totalItems = await Reimbursement.countDocuments(query);
+
+  const reimbursements = await Reimbursement.find(query)
+    .populate("user", "email")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const totalPages = Math.ceil(totalItems / limit);
+
+  return res.status(200).json({
+    success: true,
+    data: reimbursements,
+    currentPage: page,
+    totalPages,
+    totalItems
+  });
+});
 
 //  update bill on an existing reimbursement
 const updateBill = asyncHandler(async (req, res) => {
