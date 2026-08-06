@@ -13,6 +13,48 @@ const applyLeave = async (req, res)=> {
             return res.status(400).json({ message: "toDate cannot be before fromDate" })
         }
         
+        const parsedFrom = new Date(fromDate);
+        const parsedTo = new Date(toDate);
+
+        const overlappingLeave = await Leave.findOne({
+            user: req.user.id,
+            status: { $in: ["approved", "pending"] },
+            $or: [
+                { fromDate: { $lte: parsedTo }, toDate: { $gte: parsedFrom } }
+            ]
+        });
+
+        if (overlappingLeave) {
+            return res.status(400).json({
+                message: "Requested dates overlap with an existing leave application"
+            });
+        }
+
+        const user = await require("../models/User").findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const diffDays = Math.ceil((parsedTo - parsedFrom) / (1000 * 60 * 60 * 24)) + 1;
+
+        const existingLeaves = await Leave.find({
+            user: req.user.id,
+            status: { $in: ["approved", "pending"] }
+        });
+
+        let usedAndPendingDays = 0;
+        for (const l of existingLeaves) {
+            const lFrom = new Date(l.fromDate);
+            const lTo = new Date(l.toDate);
+            usedAndPendingDays += Math.ceil((lTo - lFrom) / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        if (user.totalLeaveDays - usedAndPendingDays < diffDays) {
+            return res.status(400).json({
+                message: `Insufficient leave balance. You have ${Math.max(0, user.totalLeaveDays - usedAndPendingDays)} days remaining but requested ${diffDays} days.`
+            });
+        }
+
         //  creating leave
         const leave = await Leave.create({
             user: req.user.id,
