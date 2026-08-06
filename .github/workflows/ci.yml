@@ -80,10 +80,10 @@ jobs:
         working-directory: ./client
         run: |
           npm i --package-lock-only
-          npm audit --omit=dev
+          npm audit --omit=dev --audit-level=high
 
       - name: Audit Server Dependencies
         working-directory: ./server
         run: |
           npm i --package-lock-only
-          npm audit --omit=dev
+          npm audit --omit=dev --audit-level=high
